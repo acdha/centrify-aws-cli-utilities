@@ -68,6 +68,9 @@ def client_main():
     parser.add_argument("--region", "-r", help="Enter AWS region. Default is %(default)s", default=os.environ.get("AWS_DEFAULT_REGION", "us-west-2"))
     parser.add_argument("--cert", "-c", help="Custom certificate file name. Default is the standard browser root.", default=None)
     parser.add_argument("--debug", "-d", help="This will make debug on", action="store_true")
+    parser.add_argument("--use-app-name-for-profile", help="Use the application name for the profile's name",
+                        action="store_true",
+                        default=os.environ.get("CENTRIFY_USE_APP_NAME_FOR_PROFILE", "") == "true")
     args = parser.parse_args()
 
     set_logging()
@@ -131,7 +134,8 @@ def client_main():
             if (_quit == 'q'):
                 break;
             count = profilecount [int(number)-1]
-            assumed = assumerolesaml.assume_role_with_saml(awsinputs.role, awsinputs.provider, awsinputs.saml, count, display_name, region)
+            assumed = assumerolesaml.assume_role_with_saml(awsinputs.role, awsinputs.provider, awsinputs.saml, count, display_name, region,
+                                                           use_app_name_for_profile=args.use_app_name_for_profile)
             if (assumed):
                 profilecount [int(number)-1] = count + 1
             if (_quit == 'one_role_quit'):

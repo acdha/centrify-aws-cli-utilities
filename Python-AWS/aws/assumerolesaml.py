@@ -18,8 +18,9 @@ from os.path import expanduser, join
 import configparser
 import sys
 import logging
+import re
 
-def write_cred(cred, count, display_name, region, role):
+def write_cred(cred, count, display_name, region, role, use_app_name_for_profile=False):
     home = expanduser("~")
     cred_file = join(home, ".aws", "credentials")
     config = configparser.RawConfigParser()
@@ -28,7 +29,11 @@ def write_cred(cred, count, display_name, region, role):
     rolesplit = role.split('/')
     profile_name = rolesplit[1] + '_profile'
 
-    section = profile_name
+    if use_app_name_for_profile:
+        section = re.sub(r"^aws-", "", display_name, flags=re.IGNORECASE)
+        section = re.sub(r"[^-_\w]+", "", section)
+    else:
+        section = profile_name
 
     if not config.has_section(section):
         config.add_section(section)
@@ -49,7 +54,7 @@ def write_cred(cred, count, display_name, region, role):
 
 
 
-def assume_role_with_saml(role, principle, saml, count, display_name, region):
+def assume_role_with_saml(role, principle, saml, count, display_name, region, use_app_name_for_profile=False):
     stsclient = boto3.client('sts')
 
     try:
@@ -59,5 +64,5 @@ def assume_role_with_saml(role, principle, saml, count, display_name, region):
         print("Access Denied: %s" % e, file=sys.stderr)
         return False
 
-    write_cred(cred, count, display_name, region, role)
+    write_cred(cred, count, display_name, region, role, use_app_name_for_profile=use_app_name_for_profile)
     return True
