@@ -14,23 +14,22 @@
 
 import boto3
 from botocore.exceptions import ClientError
-from os.path import expanduser
+from os.path import expanduser, join
 import configparser
 import sys
 import logging
 
 def write_cred(cred, count, display_name, region, role):
     home = expanduser("~")
-    print('home = ' + home)
-    cred_file = home + "/.aws/credentials"
+    cred_file = join(home, ".aws", "credentials")
     config = configparser.RawConfigParser()
     config.read(cred_file)
     print("Display Name : " + display_name)
     rolesplit = role.split('/')
     profile_name = rolesplit[1] + '_profile'
-#    profile_name = display_name.replace(" ","-")
-#    section = 'saml' + str(count)
-    section = profile_name #+ '_' + str(count)
+
+    section = profile_name
+
     if not config.has_section(section):
         config.add_section(section)
     config.set(section, 'output', 'json')
