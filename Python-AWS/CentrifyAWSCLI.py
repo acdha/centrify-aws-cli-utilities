@@ -63,10 +63,10 @@ def select_app(awsapps):
              
 def client_main():
     parser = argparse.ArgumentParser(description="Enter Centrify Credentials and choose AWS Role to create AWS Profile. Use this AWS Profile to run AWS commands.")
-    parser.add_argument("-tenant", "-t", help="Enter tenant url or name e.g. cloud.centrify.com or cloud", default="cloud")
-    parser.add_argument("-region", "-r", help="Enter AWS region. Default is us-west-2", default="us-west-2")
-#    parser.add_argument("-cert", "-c", help="Enter Cert file name. Default is cacerts_<tenant>.pem", default="cacerts")
-    parser.add_argument("-debug", "-d", help="This will make debug on", action="store_true")
+    parser.add_argument("--tenant", "-t", help="Enter tenant url or name e.g. cloud.centrify.com or cloud", default="cloud")
+    parser.add_argument("--region", "-r", help="Enter AWS region. Default is us-west-2", default="us-west-2")
+#    parser.add_argument("--cert", "-c", help="Enter Cert file name. Default is cacerts_<tenant>.pem", default="cacerts")
+    parser.add_argument("--debug", "-d", help="This will make debug on", action="store_true")
     args = parser.parse_args()
     
     set_logging()
