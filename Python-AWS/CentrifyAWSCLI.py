@@ -147,8 +147,9 @@ def client_main():
 try:
     client_main()
 except SystemExit as se:
-    print("Program Exited due to error or wrong input..")
-    logging.exception("Program Exited due to error or wrong input..")
+    if se.code != 0:
+        print("Program Exited due to error or wrong input..")
+        logging.exception("Program Exited due to error or wrong input..")
 except:
     print("Program Exited due to some error..")
     logging.exception("Program Exited..")
