@@ -48,23 +48,17 @@ def write_cred(cred, count, display_name, region, role):
     print('aws s3 ls --profile ' + section)
     print('-' * 80)
 
-    
+
 
 def assume_role_with_saml(role, principle, saml, count, display_name, region):
     stsclient = boto3.client('sts')
+
     try:
         cred = stsclient.assume_role_with_saml(RoleArn=role, PrincipalArn=principle, SAMLAssertion=saml)
     except ClientError as e:
-        print("Access Denied. Please check.. " + str(e))
-        logging.info(str(e))
+        logging.error("Access denied: %s", e, exc_info=True)
+        print("Access Denied: %s" % e, file=sys.stderr)
         return False
-    '''
-    print(cred)
-    print(cred['Credentials'])
-    print(cred['Credentials']['SecretAccessKey'])
-    print(cred['Credentials']['AccessKeyId'])
-    print(cred['Credentials']['SessionToken'])
-    '''
+
     write_cred(cred, count, display_name, region, role)
     return True
-    

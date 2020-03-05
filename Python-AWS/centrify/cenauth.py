@@ -48,8 +48,9 @@ def start_authentication(username, version, proxy, environment):
     authresponse = AuthResponse(response, endpoint)
     success_result = authresponse.get_success_result()
     if (success_result == False):
-        print("Invalid User")
+        print("Invalid User", file=sys.stderr)
         sys.exit(0)
+
     if (success_result == True):
         try:
             tenant_url = authresponse.get_tenant_url()
@@ -57,14 +58,14 @@ def start_authentication(username, version, proxy, environment):
             logging.error(format(e))
             logging.info('Seems we have tenant URL already ')
             return authresponse
-        
+
     endpoint = "https://"+tenant_url
     logging.info("Redirecting to " + endpoint)
     logging.info("Authenticating on the tenant..")
     response = call_rest_post(endpoint, method, json_body, headers, certpath, proxy, environment.get_debug())
     tenant_resp = AuthResponse(response, endpoint)
     return tenant_resp
-    
+
 def advance_authentication(tenant_response, endpoint, username, version, proxy, environment):
     certpath = environment.get_certpath()
     method = "/Security/AdvanceAuthentication"
@@ -76,7 +77,7 @@ def advance_authentication(tenant_response, endpoint, username, version, proxy, 
         challenge_count = challenge_count + 1
         total_mechanism = len(challenge['Mechanisms'])
         logging.info("There are " + str(total_mechanism) + " mechanisms")
-        
+
         if (total_mechanism > 1):
             again = True
             while(again):
@@ -120,7 +121,7 @@ def user_input(mechanism, request, endpoint, method, json_req, headers, certpath
     result.append(authresp)
     result.append(success_result)
     result.append(summary)
-    
+
 def poll(request, endpoint, method, json_req, headers, certpath, proxy):
     json_req = request.get_adv_auth_json_poll()
     while (True):
@@ -191,7 +192,7 @@ def handle_unix(mechanism, tenant_response, username, endpoint, method, environm
     result.append(authresp)
     result.append(success_result)
     result.append(summary)
-        
+
 
 def handle_text(mechanism, tenant_response, username, endpoint, method, proxy, environment):
     certpath = environment.get_certpath()
@@ -209,8 +210,8 @@ def handle_text(mechanism, tenant_response, username, endpoint, method, proxy, e
     summary = authresponse.get_summary()
     logging.info(summary)
     if (success_result == False):
-        print("Wrong Credentials.. Exiting..")
-        sys.exit()
+        raise RuntimeError("Wrong Credentials")
+
     global result
     result.append(authresp)
     result.append(success_result)
@@ -236,7 +237,7 @@ def handle_windows(mechanism, tenant_response, username, endpoint, method, certp
         logging.info("Poll is still alive")
     logging.info("Received Result ...")
 '''
-            
+
 def handle_text_oob(mechanism, tenant_response, username, endpoint, method, proxy, environment):
     certpath = environment.get_certpath()
     mechanism_id = mechanism['MechanismId']
@@ -250,7 +251,7 @@ def handle_text_oob(mechanism, tenant_response, username, endpoint, method, prox
     logging.info("The response is StartOob req" + authresp.text)
 #    if (platform.system() != 'Windows'):
     handle_unix(mechanism, tenant_response, username, endpoint, method, environment, proxy, request, json_req)
-############    
+############
 #    Removing Platform based code as we want to keep the same functionality across all the platforms
 #    else:
 #        handle_windows(mechanism, tenant_response, username, endpoint, method, certpath, proxy, request, json_req)
@@ -303,7 +304,7 @@ def advance_auth_for_mech(mechanism, tenant_response, username, endpoint, method
         logging.info(session_token)
         session = AuthSession(endpoint, username, session_id, session_token)
         return session
-    
+
 def elevate(session, appkey, headers, response, version, environment, proxy):
     url = response.url
     parsed_url = urlparse.urlparse(url)
@@ -318,7 +319,7 @@ def elevate(session, appkey, headers, response, version, environment, proxy):
     chal_resp = call_rest_post(session.endpoint, method, json_body, headers, environment.get_certpath(), proxy, environment.get_debug())
     auth_resp = AuthResponse(chal_resp, session.endpoint)
     return advance_authentication(auth_resp, session.endpoint, "", "1.0", proxy, environment)
-        
+
 def centrify_interactive_login(user, version, proxy, environment):
     response = start_authentication(user, version, proxy, environment)
     session = advance_authentication(response, response.tenant_url, user, version, proxy, environment)

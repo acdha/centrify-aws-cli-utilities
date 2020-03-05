@@ -72,12 +72,11 @@ def client_main():
 
     set_logging()
 
+    # FIXME: assume no if the file doesn't exist
     try:
         proxy_obj = readconfig.read_config()
-    except:
-        logging.info("proxy.properties file not found. Please make sure the files are at home dir of the script.")
-        print("proxy.properties file not found. Please make sure the files are at home dir of the script.")
-        sys.exit()
+    except Exception:
+        raise RuntimeError("proxy.properties file not found. Please make sure the files are at home dir of the script.")
     proxy = {}
     if proxy_obj.is_proxy() == 'yes':
         proxy={ 'http':proxy_obj.get_http(), 'https':proxy_obj.get_https(), 'username':proxy_obj.get_user(), 'password':proxy_obj.get_password() }
@@ -107,7 +106,7 @@ def client_main():
     logging.info("AWSapps : " + str(awsapps))
 
     if (len(awsapps) == 0):
-        print("No AWS Applications to select for the user " + user)
+        print("No AWS Applications to select for the user " + user, file=sys.stderr)
         return
 
     pattern = re.compile("[^0-9.]")
@@ -148,11 +147,12 @@ try:
     client_main()
 except SystemExit as se:
     if se.code != 0:
-        print("Program Exited due to error or wrong input..")
+        print("Program Exited due to error or wrong input...", file=sys.stderr)
         logging.exception("Program Exited due to error or wrong input..")
 except:
-    print("Program Exited due to some error..")
-    logging.exception("Program Exited..")
+    logging.exception("Unhandled Exception")
+    # FIXME: configure logging to display to the console as well
+    print("Program Exited due to unhandled exception...", file=sys.stderr)
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback.print_exception(exc_type, exc_value, exc_traceback)
 finally:

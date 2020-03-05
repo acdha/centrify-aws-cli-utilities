@@ -66,10 +66,8 @@ def call_app(session, appkey, version, environment, proxy):
     logging.info(html_response)
     encoded_saml = html_response.get_saml()
     if (encoded_saml == ''):
-        logging.info('Did not receive SAML response. Please check if you have chosen Saml App')
-        print('Did not receive SAML response. Please check if you have chosen Saml App')
-        print('Exiting..')
-        sys.exit()
+        logging.error('Did not receive SAML response. Please check if you have chosen Saml App')
+        raise RuntimeError('Did not receive SAML response. Please check if you have chosen Saml App')
     return encoded_saml
 #    return choose_role(encoded_saml, appkey)
 
@@ -112,7 +110,7 @@ def choose_role(encoded_saml, appkey):
         except ValueError:
             return 'q', None
         if (selection > len(allroles)):
-            print('You have selected a wrong role..')
+            print('You have selected a wrong role..', file=sys.stderr)
             sys.exit(0)
     else:
         print('1: ' + allroles[0])
