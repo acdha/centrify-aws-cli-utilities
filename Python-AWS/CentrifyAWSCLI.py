@@ -90,25 +90,23 @@ def client_main():
 
     response = uprest.get_applications(user, session, environment, proxy)
     result = response["Result"]
-    logging.info("Result " + str(result))
     apps = result["Apps"]
-    logging.info("Apps : " + str(apps))
-    length = len(apps)
-#    awsapps = [ apps[j] for j in range(length) if (("AWS" in apps[j]["TemplateName"] or "Amazon" in apps[j]["TemplateName"]) and apps[j]["WebAppType"] != 'UsernamePassword')]
+
     awsapps = []
-    for j in range (0, length):
-        try:
-            appinfo = {}
-            if (("AWS" in apps[j]["TemplateName"] or "Amazon" in apps[j]["TemplateName"]) and apps[j]["WebAppType"] != 'UsernamePassword'):
-                appinfo = apps[j]
-                logging.info(appinfo)
-                awsapps.append(appinfo)
-        except KeyError:
+    for app in apps:
+        if app.get("WebAppType") == 'UsernamePassword':
             continue
 
-    logging.info("AWSapps : " + str(awsapps))
+        template_name = app.get("TemplateName", "")
 
-    if (len(awsapps) == 0):
+        if "AWS" in template_name or "Amazon" in template_name:
+            awsapps.append(app)
+
+    awsapps.sort(key=lambda i: i["DisplayName"])
+
+    logging.info("AWSapps : %s", awsapps)
+
+    if not awsapps:
         print("No AWS Applications to select for the user " + user, file=sys.stderr)
         return
 
