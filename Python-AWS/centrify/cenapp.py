@@ -82,6 +82,8 @@ def choose_role(encoded_saml, appkey):
             for saml2attributevalue in saml2attribute.iter('{urn:oasis:names:tc:SAML:2.0:assertion}AttributeValue'):
                 awsroles.append(saml2attributevalue.text)
 
+    awsroles.sort()
+
     allroles = []
     saml_provider = []
     for awsrole in awsroles:
