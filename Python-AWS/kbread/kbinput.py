@@ -36,6 +36,6 @@ def readInput( caption, queue):
         if shouldExit == True :
             logging.info("User used the URL. No need for password input")
             return False
-        
+
     queue.put(input)
     return True

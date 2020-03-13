@@ -23,7 +23,7 @@ class CentrifyHtmlParser(HTMLParser):
         super().__init__()
         self.reset()
         self.saml = ''
-        
+
     def handle_startendtag(self, tag, attrs):
         if (tag == 'input'):
             for attr in attrs:
@@ -32,9 +32,9 @@ class CentrifyHtmlParser(HTMLParser):
                 if (attr[0] == 'value'):
                     saml = attr[1]
                     self.saml = saml
-        
+
     def get_saml(self):
         return self.saml
-    
+
     def clean(self):
         self.saml = ''

@@ -27,8 +27,8 @@ class AuthResponse(object):
         logging.info('------ Json Response from the REST call ---------')
         logging.info(json_resp)
         logging.info('--------------------------------------------------')
-        
-                
+
+
     def get_success_result(self):
         json_resp = json.loads(self.response.text)
         success_result = json_resp['success']
@@ -37,15 +37,15 @@ class AuthResponse(object):
     def get_tenant_url(self):
         json_resp = json.loads(self.response.text)
         tenant_url = json_resp['Result']['PodFqdn']
-        return tenant_url   
-    
+        return tenant_url
+
     def get_mechanism(self):
         json_resp = json.loads(self.response.text)
         challenges = json_resp['Result']['Challenges']
         mechanisms = challenges[0]
         a_mechanism = mechanisms['Mechanisms']
         return a_mechanism
-    
+
     def get_challenges(self):
         json_resp = json.loads(self.response.text)
         return json_resp['Result']['Challenges']
@@ -54,12 +54,12 @@ class AuthResponse(object):
         json_resp = json.loads(self.response.text)
         tenant_id = json_resp['Result']['TenantId']
         return tenant_id
-    
+
     def get_sessionid(self):
         json_resp = json.loads(self.response.text)
         session_id = json_resp['Result']['SessionId']
         return session_id
-    
+
     def get_mechanismid(self):
         json_resp = json.loads(self.response.text)
         challenges = json_resp['Result']['Challenges']
@@ -71,7 +71,7 @@ class AuthResponse(object):
     def get_summary(self):
         json_resp = json.loads(self.response.text)
         return json_resp['Result']['Summary']
-    
+
     def get_message(self):
         json_resp = json.loads(self.response.text)
         return json_resp['Result']['Message']

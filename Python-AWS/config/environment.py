@@ -23,8 +23,8 @@ class Environment(object):
         self.certpath = certpath
         self.debug = debug
         self.applications = []
-        
-        
+
+
     def log(self):
         logging.info('--------- Environment -----------')
         logging.info(self.name)
@@ -32,24 +32,24 @@ class Environment(object):
         logging.info(self.certpath)
         for application in self.applications:
             application.log_application()
-        
+
     def get_name(self):
         return self.name
-    
+
     def get_endpoint(self):
         return self.endpoint
-    
+
     def get_certpath(self):
         return self.certpath
-    
+
     def get_debug(self):
         return self.debug
-    
+
     def get_apps_properties(self):
         return self.apps_properties
-    
+
     def get_applications(self):
         return self.applications
-    
+
     def set_applications(self, applications):
         self.applications = applications

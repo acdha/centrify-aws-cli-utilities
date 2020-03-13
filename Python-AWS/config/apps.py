@@ -22,19 +22,19 @@ class Application(object):
         self.centrifyenv = centrifyenv
         self.appkey = appkey
         self.role = role
-        
+
     def get_aws_env(self):
         return self.awsenv
-    
+
     def get_centrify_env(self):
         return self.centrifyenv
-    
+
     def get_appkey(self):
         return self.appkey
-    
+
     def get_role(self):
         return self.role
-    
+
     def log_application(self):
         logging.info('--------- Application -----------')
         logging.info(self.awsenv)

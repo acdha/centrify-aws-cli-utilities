@@ -14,7 +14,7 @@
 
 def printline(n=80):
     print('-' * n)
-    
+
 def printobj(obj):
     printline()
     print(obj)

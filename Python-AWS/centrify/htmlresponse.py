@@ -24,8 +24,8 @@ class HtmlResponse(object):
     def __init__(self, html_response):
         self.html_response = html_response
         self.saml = '';
-        
-    
+
+
     def get_saml(self):
         htmlparser = CentrifyHtmlParser()
         htmlparser.feed(self.html_response)

@@ -27,7 +27,7 @@ class AdvAuthRequest(object):
         self.password = password
         logging.info('--------- Creating Adv Authentiation Request ----------')
         logging.info("Tenant " + tenant_id + " Session " + session_id + " Mechanism " + mechanism_id)
-        
+
     def get_adv_auth_json_passwd(self):
         message = {}
         message['TenantId'] = self.tenant_id
@@ -38,7 +38,7 @@ class AdvAuthRequest(object):
         json_body=json.dumps(message)
         logging.info('---------- Advance Authentication Passwd Request JSON body ------------')
         return json_body
-    
+
     def get_adv_auth_json_startoob(self):
         message = {}
         message['TenantId'] = self.tenant_id
@@ -48,7 +48,7 @@ class AdvAuthRequest(object):
         json_body=json.dumps(message)
         logging.info('---------- Advance Authentication StartOOB Request JSON body ------------')
         return json_body
-    
+
     def get_adv_auth_json_poll(self):
         message = {}
         message['TenantId'] = self.tenant_id
@@ -58,10 +58,10 @@ class AdvAuthRequest(object):
         json_body=json.dumps(message)
         logging.info('---------- Advance Authentication StartOOB Request JSON body ------------')
         return json_body
-'''    
+'''
     def __str__(self, *args, **kwargs):
         return "Tenant : " + self.tenant_id + " Session : " + self.session_id + " Mechanism : " + self.mechanism_id
-   
+
     def __repr__(self, *args, **kwargs):
         return "Tenant : " + self.tenant_id + " Session : " + self.session_id + " Mechanism : " + self.mechanism_id
 '''

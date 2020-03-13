@@ -20,11 +20,11 @@ $global:Me;
 
 
 function GetAWSApps {
-	[CmdletBinding()] 
+	[CmdletBinding()]
 	param(
-		[string]$username, 
+		[string]$username,
 		$token
-	) 
+	)
     $restArg = @{};
     Write-Verbose("Invoking getupdata")
 	$restResult = Centrify-InvokeREST -Method "/uprest/getupdata" -Endpoint $token.Endpoint -Token $token.BearerToken -IncludeSessionInResult $True
@@ -38,10 +38,10 @@ function GetAWSApps {
 }
 
 function SelectAWSApp {
-	[CmdletBinding()] 
+	[CmdletBinding()]
 	param(
 		$awsapps
-	) 
+	)
     Write-Host("Select the aws app to login. Type 'quit' or 'q' to exit")
 	$count = 1
 	foreach ($app in $awsapps) {
@@ -53,7 +53,7 @@ function SelectAWSApp {
 }
 
 function ExtractRoles {
-	[CmdletBinding()] 
+	[CmdletBinding()]
 	param(
 		$responseHtml
 	)
@@ -91,7 +91,7 @@ function ExtractRoles {
 }
 
 function ChooseRole {
-	[CmdletBinding()] 
+	[CmdletBinding()]
 	param(
 		[array]$roleArray
 	)
@@ -153,17 +153,17 @@ function WriteXmlToScreen ([xml]$xml)
 function HandleAppClick ($app, $username) {
 		$centrifyJSONFunction = "/uprest/handleAppClick?appkey="+$app.AppKey;
 		$Uri=$token.Endpoint+$centrifyJSONFunction
-		Write-Verbose("Calling " + $Uri);	
-		
+		Write-Verbose("Calling " + $Uri);
+
 		$jsonContent = "[]"
 		$responseHtml = Invoke-RestMethod -Uri $Uri -ContentType "application/json" -Method Post -Body $jsonContent -WebSession $websession -MaximumRedirection 0 -ErrorAction SilentlyContinue -ErrorVariable RedirectionError
-		
+
 		if ($RedirectionError) {
 			Write-Verbose "Probably need to elevate."
 			$global:webresponse = Invoke-WebRequest -Method POST -Uri $Uri -Websession $websession -MaximumRedirection 0 -ErrorAction SilentlyContinue -ErrorVariable WebReqError;
 			Write-Verbose "Getting challange id"
             $redirectLocation = $webresponse.Headers.Location
-            
+
 			$global:queryData = [System.Web.HttpUtility]::ParseQueryString($redirectLocation)
 			$elevate = $queryData['elevate']
 			$challenge = $queryData['challengeId']
@@ -174,9 +174,9 @@ function HandleAppClick ($app, $username) {
 
 		    $restMsg = @{}
 		    $restMsg.ChallengeStateId = $challenge
-		
+
 		    $global:restJsonMsg = $restMsg | ConvertTo-Json
-		    $global:addHeaders = @{ 
+		    $global:addHeaders = @{
 			    "X-CENTRIFY-NATIVE-CLIENT" = "1"
 		    }
 		    $addHeaders.Authorization = "Bearer " + $elevateResult.BearerToken
@@ -184,15 +184,15 @@ function HandleAppClick ($app, $username) {
             Write-Verbose ("Calling " + $Uri)
 		    Write-Verbose $addHeaders
 		    Write-Verbose $restJsonMsg
-		
+
 		    $responseHtml = Invoke-RestMethod -Uri $Uri -ContentType "application/json" -Method Post -Body $restJsonMsg -Headers $addHeaders
 
 		}
-		
+
 		if (!$responseHtml) {
 			Write-Warning "Could not received SAML.. Exiting..";
 			Exit 1;
-		}  
+		}
 		Write-Verbose "Received SAML Response..";
 		Write-Verbose ("HTML : " + $responseHtml)
         return $responseHtml
@@ -201,7 +201,7 @@ function HandleAppClick ($app, $username) {
 function Centrify-AWS-Authentication ($Tenant, $Region, $Location)
 {
 	$endpoint = $Tenant
-	
+
     $username = Read-Host -Prompt "Enter username to authenticate ";
 
     Write-Verbose "Initiating SSO for AWS through $endpoint for $username";
@@ -248,7 +248,7 @@ function Centrify-AWS-Authentication ($Tenant, $Region, $Location)
         else {
 		    $selection = SelectAWSApp $awsapps
         }
-        
+
 		try {
 			$input = [int]$selection
 		}
@@ -259,10 +259,10 @@ function Centrify-AWS-Authentication ($Tenant, $Region, $Location)
 		if (($input -gt $arrapps.count) -or ($input -eq 0)) {
 			continue;
 		}
-		
+
 		$app = $awsapps[$input - 1]
 		$responseHandleApp = HandleAppClick $app $username
-        
+
         Write-Verbose "Choosing role based on the received SAML"
 
         while ($true) {
@@ -285,11 +285,11 @@ function Centrify-AWS-Authentication ($Tenant, $Region, $Location)
                 break;
             }
 
-		    Write-Verbose "Sending SAML to AWS..";   
+		    Write-Verbose "Sending SAML to AWS..";
 		    Write-Verbose ("Role : " + $roleChoiceValue + " Principle : " + $principle + " Region : " + $Region)
 #		    Write-Host $roleChoiceValue
-#		    Write-Host $principle 
-#		    Write-Host $saml 
+#		    Write-Host $principle
+#		    Write-Host $saml
 #		    Write-Host $Region
 #           Write-Host $($roleChoiceValue).ToString()
 			try {
@@ -324,7 +324,7 @@ function Centrify-AWS-Authentication ($Tenant, $Region, $Location)
                     Write-Host $ErrorMessage
                     Exit
                 }
-			
+
 			    Write-Output "-------------------------------------------------------------";
 			    Write-Output ("Successful - Use `$profileName Object to Run the commands.");
 			    Write-Output ("E.g. Get-S3Bucket -ProfileName " + $ProfileName
@@ -345,4 +345,3 @@ function Centrify-AWS-Authentication ($Tenant, $Region, $Location)
 
 #Export-ModuleMember -function WriteXmlToScreen
 Export-ModuleMember -function Centrify-AWS-Authentication
-

@@ -24,7 +24,7 @@ class AuthRequest(object):
         self.tenantid = tenantid
         self.username = username
         self.version = version
-        
+
     def get_start_auth_json(self):
         message={}
         if (self.tenantid):

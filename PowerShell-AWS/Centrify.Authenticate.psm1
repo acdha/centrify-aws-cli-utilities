@@ -19,7 +19,7 @@ Import-Module .\Centrify.Samples.PowerShell.psm1 3>$null 4>$null -force
 $enableVerbose = ($PSBoundParameters['Verbose'] -eq $true)
 
 
-function Centrify-Authenticate([string]$Tenant="devdog", [string]$Location) 
+function Centrify-Authenticate([string]$Tenant="devdog", [string]$Location)
 {
     if ($VerbosePreference -eq "Continue") {
          Write-Host "Making debug on. Note that it will log incoming and outgoing REST messages which can contain sensetive information" -foregroundcolor "red"
@@ -43,4 +43,3 @@ function Centrify-Authenticate([string]$Tenant="devdog", [string]$Location)
     Centrify-AWS-Authentication $Tenant $Region $Location
 	Write-Host "--------------------------COMPLETE---------------------------" -foregroundcolor Green
 }
-

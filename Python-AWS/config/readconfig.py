@@ -23,7 +23,7 @@ from config import apps, environment, proxy
 def set_logging():
     logging.basicConfig(filename='config.log', level=logging.INFO)
     logging.info('Starting App..')
-    
+
 def read_proxy():
     file_reader = configparser.ConfigParser()
     config_file = 'proxy.properties'
@@ -35,7 +35,7 @@ def read_proxy():
     proxy_password = file_reader['Proxy']['proxy_password']
     proxy_object = proxy.Proxy(isproxy, http_proxy, https_proxy, proxy_user, proxy_password)
     return proxy_object
-    
+
 ''' This method is not used
 def read_environments():
     file_reader = configparser.ConfigParser()
@@ -51,12 +51,12 @@ def read_environments():
         environments.append(environment_object)
     return environments
 '''
-        
+
 def log_config(proxy):
     proxy.log()
 #    for environment in environments:
 #        environment.log()
-        
+
 def read_config():
     proxy = read_proxy()
 #   environments = read_environments() No more needed

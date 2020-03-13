@@ -34,7 +34,7 @@ def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
 #    logging.info("And body : " + str(body))
     if (debug):
         logging.info("Request : " + str(body))
-    
+
     try :
         response = requests.post(endpoint, headers=headers, verify=certpath, proxies=proxy, data=body)
     except Exception as e :
@@ -42,7 +42,7 @@ def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
         print(Fore.RED + 'Error in calling ' + endpoint + ' - Please refer logs. ')
         print(Style.RESET_ALL)
         sys.exit(0)
-    
+
 #    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
 
 #    Temporary Change

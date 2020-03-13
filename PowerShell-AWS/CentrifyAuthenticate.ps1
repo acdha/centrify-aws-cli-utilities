@@ -17,7 +17,7 @@ param(
 [string]$Location
 )
 
-#Import-Module .\Centrify.Authenticate.psm1 -PassThru 3>$null 4>$null -force 
-Import-Module .\Centrify.Authenticate.psm1 3>$null 4>$null -force 
+#Import-Module .\Centrify.Authenticate.psm1 -PassThru 3>$null 4>$null -force
+Import-Module .\Centrify.Authenticate.psm1 3>$null 4>$null -force
 
 Centrify-Authenticate -Tenant $Tenant $Location
