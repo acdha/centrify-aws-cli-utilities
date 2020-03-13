@@ -36,7 +36,7 @@ class Application(object):
         return self.role
 
     def log_application(self):
-        logging.info('--------- Application -----------')
+        logging.info("--------- Application -----------")
         logging.info(self.awsenv)
         logging.info(self.centrifyenv)
         logging.info(self.appkey)

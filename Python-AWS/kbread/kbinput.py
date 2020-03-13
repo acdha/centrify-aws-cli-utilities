@@ -16,15 +16,15 @@ import logging
 import platform
 import sys
 
-if (platform.system() == 'Windows'):
+if (platform.system() == "Windows"):
     import msvcrt
 
 shouldExit = False
 
 def readInput( caption, queue):
-    sys.stdout.write('%s :'%caption)
+    sys.stdout.write("%s :"%caption)
     sys.stdout.flush()
-    input = ''
+    input = ""
     while True:
         if msvcrt.kbhit():
             byte_arr = msvcrt.getche()

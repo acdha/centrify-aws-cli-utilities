@@ -26,12 +26,12 @@ class Proxy(object):
 
 
     def log(self):
-        logging.info('------  Proxy -------')
+        logging.info("------  Proxy -------")
         logging.info(self.isproxy)
         logging.info(self.proxy_http)
         logging.info(self.proxy_https)
         logging.info(self.proxy_user)
-        logging.info('********')
+        logging.info("********")
 
     def is_proxy(self):
         return self.isproxy

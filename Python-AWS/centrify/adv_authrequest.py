@@ -25,38 +25,38 @@ class AdvAuthRequest(object):
         self.session_id = session_id
         self.mechanism_id = mechanism_id
         self.password = password
-        logging.info('--------- Creating Adv Authentiation Request ----------')
+        logging.info("--------- Creating Adv Authentiation Request ----------")
         logging.info("Tenant " + tenant_id + " Session " + session_id + " Mechanism " + mechanism_id)
 
     def get_adv_auth_json_passwd(self):
         message = {}
-        message['TenantId'] = self.tenant_id
-        message['SessionId'] = self.session_id
-        message['MechanismId'] = self.mechanism_id
-        message['Action'] = "Answer"
-        message['Answer'] = self.password
+        message["TenantId"] = self.tenant_id
+        message["SessionId"] = self.session_id
+        message["MechanismId"] = self.mechanism_id
+        message["Action"] = "Answer"
+        message["Answer"] = self.password
         json_body=json.dumps(message)
-        logging.info('---------- Advance Authentication Passwd Request JSON body ------------')
+        logging.info("---------- Advance Authentication Passwd Request JSON body ------------")
         return json_body
 
     def get_adv_auth_json_startoob(self):
         message = {}
-        message['TenantId'] = self.tenant_id
-        message['SessionId'] = self.session_id
-        message['MechanismId'] = self.mechanism_id
-        message['Action'] = "StartOOB"
+        message["TenantId"] = self.tenant_id
+        message["SessionId"] = self.session_id
+        message["MechanismId"] = self.mechanism_id
+        message["Action"] = "StartOOB"
         json_body=json.dumps(message)
-        logging.info('---------- Advance Authentication StartOOB Request JSON body ------------')
+        logging.info("---------- Advance Authentication StartOOB Request JSON body ------------")
         return json_body
 
     def get_adv_auth_json_poll(self):
         message = {}
-        message['TenantId'] = self.tenant_id
-        message['SessionId'] = self.session_id
-        message['MechanismId'] = self.mechanism_id
-        message['Action'] = "Poll"
+        message["TenantId"] = self.tenant_id
+        message["SessionId"] = self.session_id
+        message["MechanismId"] = self.mechanism_id
+        message["Action"] = "Poll"
         json_body=json.dumps(message)
-        logging.info('---------- Advance Authentication StartOOB Request JSON body ------------')
+        logging.info("---------- Advance Authentication StartOOB Request JSON body ------------")
         return json_body
 '''
     def __str__(self, *args, **kwargs):

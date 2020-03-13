@@ -28,8 +28,8 @@ def write_cred(cred, count, display_name, region, role, use_app_name_for_profile
     config = configparser.RawConfigParser()
     config.read(cred_file)
     print("Display Name : " + display_name)
-    rolesplit = role.split('/')
-    profile_name = rolesplit[1] + '_profile'
+    rolesplit = role.split("/")
+    profile_name = rolesplit[1] + "_profile"
 
     if use_app_name_for_profile:
         section = re.sub(r"^aws-", "", display_name, flags=re.IGNORECASE)
@@ -39,25 +39,25 @@ def write_cred(cred, count, display_name, region, role, use_app_name_for_profile
 
     if not config.has_section(section):
         config.add_section(section)
-    config.set(section, 'output', 'json')
-    config.set(section, 'region', region)
-    config.set(section, 'aws_access_key_id', cred['Credentials']['AccessKeyId'])
-    config.set(section, 'aws_secret_access_key', cred['Credentials']['SecretAccessKey'])
-    config.set(section, 'aws_session_token', cred['Credentials']['SessionToken'])
-    with open(cred_file, 'w+') as credentials:
+    config.set(section, "output", "json")
+    config.set(section, "region", region)
+    config.set(section, "aws_access_key_id", cred["Credentials"]["AccessKeyId"])
+    config.set(section, "aws_secret_access_key", cred["Credentials"]["SecretAccessKey"])
+    config.set(section, "aws_session_token", cred["Credentials"]["SessionToken"])
+    with open(cred_file, "w+") as credentials:
         config.write(credentials)
-    print('\n\n')
-    print('-' * 80)
-    print('Your profile is created. It will expire at ' + str(cred['Credentials']['Expiration']))
-    print('Use --profile ' + section + ' for the commands')
-    print('Example - ')
-    print('aws s3 ls --profile ' + section)
-    print('-' * 80)
+    print("\n\n")
+    print("-" * 80)
+    print("Your profile is created. It will expire at " + str(cred["Credentials"]["Expiration"]))
+    print("Use --profile " + section + " for the commands")
+    print("Example - ")
+    print("aws s3 ls --profile " + section)
+    print("-" * 80)
 
 
 
 def assume_role_with_saml(role, principle, saml, count, display_name, region, use_app_name_for_profile=False):
-    stsclient = boto3.client('sts')
+    stsclient = boto3.client("sts")
 
     try:
         cred = stsclient.assume_role_with_saml(RoleArn=role, PrincipalArn=principle, SAMLAssertion=saml)

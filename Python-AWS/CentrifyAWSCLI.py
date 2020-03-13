@@ -49,8 +49,8 @@ def login_instance(proxy, environment):
     return session, user
 
 def set_logging():
-    logging.basicConfig(handlers=[logging.FileHandler('centrify-python-aws.log', 'w', 'utf-8')], level=logging.INFO, format='%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s')
-    logging.info('Starting App..')
+    logging.basicConfig(handlers=[logging.FileHandler("centrify-python-aws.log", "w", "utf-8")], level=logging.INFO, format="%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s")
+    logging.info("Starting App..")
     print("Logfile - centrify-python-aws.log")
 
 
@@ -58,7 +58,7 @@ def select_app(awsapps):
     print("Select the aws app to login. Type 'quit' or 'q' to exit")
     count = 1
     for app in awsapps:
-        print(str(count) + " : " + app['DisplayName'] + " | " + app['AppKey'])
+        print(str(count) + " : " + app["DisplayName"] + " | " + app["AppKey"])
         count = count+1
     if (len(awsapps) == 1):
         return "1"
@@ -87,8 +87,8 @@ def client_main():
     except Exception:
         raise RuntimeError("proxy.properties file not found. Please make sure the files are at home dir of the script.")
     proxy = {}
-    if proxy_obj.is_proxy() == 'yes':
-        proxy={ 'http':proxy_obj.get_http(), 'https':proxy_obj.get_https(), 'username':proxy_obj.get_user(), 'password':proxy_obj.get_password() }
+    if proxy_obj.is_proxy() == "yes":
+        proxy={ "http":proxy_obj.get_http(), "https":proxy_obj.get_https(), "username":proxy_obj.get_user(), "password":proxy_obj.get_password() }
     environment = get_environment(args)
     session, user = login_instance(proxy, environment)
 
@@ -100,7 +100,7 @@ def client_main():
 
     awsapps = []
     for app in apps:
-        if app.get("WebAppType") == 'UsernamePassword':
+        if app.get("WebAppType") == "UsernamePassword":
             continue
 
         template_name = app.get("TemplateName", "")
@@ -129,20 +129,20 @@ def client_main():
         if (int(number) - 1 >= len(awsapps)):
             continue
 
-        appkey = awsapps[int(number)-1]['AppKey']
-        display_name = awsapps[int(number)-1]['DisplayName']
+        appkey = awsapps[int(number)-1]["AppKey"]
+        display_name = awsapps[int(number)-1]["DisplayName"]
         print("Calling app with key : " + appkey)
         encoded_saml = cenapp.call_app(session, appkey, "1.0", environment, proxy)
         while(True):
             _quit, awsinputs = cenapp.choose_role(encoded_saml, appkey)
-            if (_quit == 'q'):
+            if (_quit == "q"):
                 break;
             count = profilecount [int(number)-1]
             assumed = assumerolesaml.assume_role_with_saml(awsinputs.role, awsinputs.provider, awsinputs.saml, count, display_name, region,
                                                            use_app_name_for_profile=args.use_app_name_for_profile)
             if (assumed):
                 profilecount [int(number)-1] = count + 1
-            if (_quit == 'one_role_quit'):
+            if (_quit == "one_role_quit"):
                 break
 
         if (len(awsapps) == 1):

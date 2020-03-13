@@ -13,7 +13,7 @@
 # limitations under the License.
 
 def printline(n=80):
-    print('-' * n)
+    print("-" * n)
 
 def printobj(obj):
     printline()
