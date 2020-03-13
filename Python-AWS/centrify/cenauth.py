@@ -12,25 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from centrify.cenrest import call_rest_post
-from centrify.authrequest import AuthRequest
-from centrify.authresponse import AuthResponse
-from centrify.adv_authrequest import AdvAuthRequest
-from getpass import getpass
-from centrify.cenauthsession import AuthSession
+import json
 import logging
+import platform
 import sys
 import time
-from threading import Thread
-from kbread import kbinput
-from queue import Queue
-import platform
-from centrify import authresponse
 import urllib
+from getpass import getpass
+from queue import Queue
+from threading import Thread
 from urllib import parse as urlparse
-import json
-from colorama import Fore, Back, Style
 
+from centrify import authresponse
+from centrify.adv_authrequest import AdvAuthRequest
+from centrify.authrequest import AuthRequest
+from centrify.authresponse import AuthResponse
+from centrify.cenauthsession import AuthSession
+from centrify.cenrest import call_rest_post
+from colorama import Back, Fore, Style
+from kbread import kbinput
 
 result = []
 done = False

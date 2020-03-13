@@ -15,6 +15,7 @@
 import json
 import logging
 
+
 class AdvAuthRequest(object):
     '''
     Request object for advanced authentication

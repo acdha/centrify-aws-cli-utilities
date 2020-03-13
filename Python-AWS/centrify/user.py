@@ -22,4 +22,3 @@ class user(object):
         
         def get_session(self):
             return self.session
-        

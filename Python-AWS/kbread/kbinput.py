@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+import logging
 import platform
+import sys
+
 if (platform.system() == 'Windows'):
     import msvcrt
-import logging
 
 shouldExit = False
 

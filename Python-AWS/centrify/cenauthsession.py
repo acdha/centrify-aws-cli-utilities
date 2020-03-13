@@ -22,4 +22,3 @@ class AuthSession(object):
         self.username = username
         self.session_id = session_id
         self.session_token = session_token
-        

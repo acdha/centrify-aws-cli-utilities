@@ -12,18 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from centrify import cenauth
-from centrify import cenapp
-from aws import assumerolesaml
+import argparse
 import logging
-from config import readconfig
-from centrify import uprest
+import os
 import re
 import sys
-import argparse
-from config import environment
 import traceback
-import os
+
+from aws import assumerolesaml
+from centrify import cenapp, cenauth, uprest
+from config import environment, readconfig
+
 
 def get_environment(args):
     tenant = args.tenant

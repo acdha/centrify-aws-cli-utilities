@@ -15,6 +15,7 @@
 import json
 import logging
 
+
 class AuthRequest(object):
     '''
     Message body required for Authentication requests
@@ -34,4 +35,3 @@ class AuthRequest(object):
         logging.info('--------- Body of Start Authentication Request --------------')
         logging.info(json_body)
         return json_body
-    

@@ -13,8 +13,11 @@
 # limitations under the License.
 
 import json
-from centrify import cenrest
 import logging
+
+from centrify import cenrest
+
+
 def get_applications(user, session, environment, proxy):
     method = "/uprest/getupdata"
     body = {}
@@ -26,4 +29,3 @@ def get_applications(user, session, environment, proxy):
     response = cenrest.call_rest_post(session.endpoint, method, body, headers, environment.get_certpath(), proxy,environment.get_debug())
     logging.info(response.text)
     return response.json()
-

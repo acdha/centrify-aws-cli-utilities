@@ -14,6 +14,7 @@
 
 import logging
 
+
 class Application(object):
 
     def __init__(self, awsenv, centrifyenv, appkey, role):

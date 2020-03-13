@@ -22,4 +22,3 @@ class AwsInputs(object):
         self.role = role
         self.provider = provider
         self.saml = saml
-        

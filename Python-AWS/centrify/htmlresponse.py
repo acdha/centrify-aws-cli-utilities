@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from centrify.htmlparser import CentrifyHtmlParser
 import logging
+
+from centrify.htmlparser import CentrifyHtmlParser
+
 
 class HtmlResponse(object):
     '''
@@ -32,4 +34,3 @@ class HtmlResponse(object):
         logging.info("------------ SAML ---------------")
         logging.info(saml)
         return saml
-        

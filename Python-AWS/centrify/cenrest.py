@@ -12,11 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests
 import logging
-import sys, traceback, trace
-from colorama import Fore, Back, Style
-    
+import sys
+import trace
+import traceback
+
+import requests
+from colorama import Back, Fore, Style
+
+
 def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
     endpoint = endpoint+method
     if 'x-centrify-native-client' not in headers:
@@ -61,4 +65,3 @@ def call_rest_post_redirect(endpoint, method, body, headers, certpath, proxy, al
     response = requests.post(endpoint, headers=headers, verify=certpath, proxies=proxy, data=body)
     logging.info("Received Response : " + response.text)
     return response
-    

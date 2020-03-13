@@ -12,19 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from centrify import cenrest, cenauth
-from centrify.htmlresponse import HtmlResponse
 import base64
-import xml.etree.ElementTree as ET
-import sys
-from centrify.awsinputs import AwsInputs
-from centrify.util import printline
-import logging
-from _operator import contains
-import urllib
-from urllib import parse as urlparse
 import json
+import logging
+import sys
+import urllib
+import xml.etree.ElementTree as ET
+from urllib import parse as urlparse
+
+from _operator import contains
+from centrify import cenauth, cenrest
 from centrify.authresponse import AuthResponse
+from centrify.awsinputs import AwsInputs
+from centrify.htmlresponse import HtmlResponse
+from centrify.util import printline
 from colorama import Fore, Style
 
 

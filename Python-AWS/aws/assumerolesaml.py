@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import boto3
-from botocore.exceptions import ClientError
-from os.path import expanduser, join
 import configparser
-import sys
 import logging
 import re
+import sys
+from os.path import expanduser, join
+
+import boto3
+from botocore.exceptions import ClientError
+
 
 def write_cred(cred, count, display_name, region, role, use_app_name_for_profile=False):
     home = expanduser("~")

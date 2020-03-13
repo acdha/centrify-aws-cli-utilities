@@ -15,6 +15,7 @@
 import json
 import logging
 
+
 class AuthResponse(object):
     '''
     Authentication Response received
@@ -74,4 +75,3 @@ class AuthResponse(object):
     def get_message(self):
         json_resp = json.loads(self.response.text)
         return json_resp['Result']['Message']
-        

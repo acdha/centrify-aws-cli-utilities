@@ -19,6 +19,3 @@ def printobj(obj):
     printline()
     print(obj)
     printline()
-    
-
-    

@@ -14,6 +14,7 @@
 
 from html.parser import HTMLParser
 
+
 class CentrifyHtmlParser(HTMLParser):
     '''
     Parser for HTML response received from handleAppClick method
