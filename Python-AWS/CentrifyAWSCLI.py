@@ -20,6 +20,7 @@ import os
 import re
 import sys
 import traceback
+from getpass import getuser
 
 from aws import assumerolesaml
 from centrify import cenapp, cenauth, uprest
@@ -32,15 +33,16 @@ def get_environment(args):
         tenant = tenant + ".centrify.com"
     name = tenant.split(".")[0]
     tenant = "https://" + tenant
-    cert = args.cert
-    debug = args.debug
-    env = environment.Environment(name, tenant, cert, debug)
+    env = environment.Environment(name, tenant, args.cert, args.debug,
+                                  args.username)
     return env
 
-
-
 def login_instance(proxy, environment):
-    user = input('Please enter your username : ')
+    if not environment.username:
+        user = input("Please enter your username : ")
+    else:
+        user = environment.username
+
     version = "1.0"
     #session = cenauth.centrify_interactive_login(environment.get_endpoint(), user, version, environment.get_certpath(), proxy)
     session = cenauth.centrify_interactive_login(user, version, proxy, environment)
@@ -65,6 +67,9 @@ def select_app(awsapps):
 
 def client_main():
     parser = argparse.ArgumentParser(description="Enter Centrify Credentials and choose AWS Role to create AWS Profile. Use this AWS Profile to run AWS commands.")
+    parser.add_argument("--username", "-u",
+                        help="Use a username other than %(default)s",
+                        default=os.environ.get("CENTRIFY_USERNAME", getuser()))
     parser.add_argument("--tenant", "-t", help="Enter tenant url or name e.g. cloud.centrify.com or cloud", default="cloud")
     parser.add_argument("--region", "-r", help="Enter AWS region. Default is %(default)s", default=os.environ.get("AWS_DEFAULT_REGION", "us-west-2"))
     parser.add_argument("--cert", "-c", help="Custom certificate file name. Default is the standard browser root.", default=None)
