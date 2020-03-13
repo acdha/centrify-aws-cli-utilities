@@ -13,5 +13,7 @@
 # limitations under the License.
 
 
+from __future__ import print_function
+
 from centrify import (adv_authrequest, authrequest, authresponse, cenauth,
                       cenauthsession, cenrest, htmlparser, htmlresponse)
