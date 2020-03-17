@@ -13,6 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+A number of options can be specified as environmental variables to avoid needing
+frequent re-entry on the command-line:
+
+--cert:                         CENTRIFY_CUSTOM_CA
+--region:                       AWS_DEFAULT_REGION
+--tenant:                       CENTRIFY_TENANT
+--use-app-name-for-profile:     CENTRIFY_USE_APP_NAME_FOR_PROFILE
+--username:                     CENTRIFY_USERNAME
+"""
 
 from __future__ import print_function
 
@@ -31,13 +41,13 @@ from config import environment, readconfig
 
 def get_environment(args):
     tenant = args.tenant
-    if ("centrify.com" not in tenant):
+    if "centrify.com" not in tenant:
         tenant = tenant + ".centrify.com"
     name = tenant.split(".")[0]
     tenant = "https://" + tenant
-    env = environment.Environment(name, tenant, args.cert, args.debug,
-                                  args.username)
+    env = environment.Environment(name, tenant, args.cert, args.debug, args.username)
     return env
+
 
 def login_instance(proxy, environment):
     if not environment.username:
@@ -67,18 +77,52 @@ def select_app(awsapps):
     return input("Enter Number : ")
 
 
+class ArgparseSensibleFormatter(
+    argparse.RawDescriptionHelpFormatter, argparse.ArgumentDefaultsHelpFormatter
+):
+    pass
+
+
 def client_main():
-    parser = argparse.ArgumentParser(description="Enter Centrify Credentials and choose AWS Role to create AWS Profile. Use this AWS Profile to run AWS commands.")
-    parser.add_argument("--username", "-u",
-                        help="Use a username other than %(default)s",
-                        default=os.environ.get("CENTRIFY_USERNAME", getuser()))
-    parser.add_argument("--tenant", "-t", help="Enter tenant url or name e.g. cloud.centrify.com or cloud", default="cloud")
-    parser.add_argument("--region", "-r", help="Enter AWS region. Default is %(default)s", default=os.environ.get("AWS_DEFAULT_REGION", "us-west-2"))
-    parser.add_argument("--cert", "-c", help="Custom certificate file name. Default is the standard browser root.", default=None)
-    parser.add_argument("--debug", "-d", help="This will make debug on", action="store_true")
-    parser.add_argument("--use-app-name-for-profile", help="Use the application name for the profile's name",
-                        action="store_true",
-                        default=os.environ.get("CENTRIFY_USE_APP_NAME_FOR_PROFILE", "") == "true")
+    parser = argparse.ArgumentParser(
+        description="Use Centrify SSO to populate a local AWS profile with short-term credentials",
+        formatter_class=ArgparseSensibleFormatter,
+        epilog=__doc__.strip(),
+    )
+
+    parser.add_argument(
+        "--username",
+        "-u",
+        help="Change the username used to authenticate to Centrify",
+        default=os.environ.get("CENTRIFY_USERNAME", getuser()),
+    )
+    parser.add_argument(
+        "--tenant",
+        "-t",
+        help="Enter tenant url or name e.g. cloud.centrify.com or cloud",
+        default=os.environ.get("CENTRIFY_TENANT", "cloud"),
+    )
+    parser.add_argument(
+        "--region",
+        "-r",
+        help="Enter AWS region. Default is %(default)s",
+        default=os.environ.get("AWS_DEFAULT_REGION", "us-west-2"),
+    )
+    parser.add_argument(
+        "--cert",
+        "-c",
+        help="Use a custom certificate root instead of the standard browser root",
+        default=os.environ.get("CENTRIFY_CUSTOM_CA", None),
+    )
+    parser.add_argument(
+        "--debug", "-d", help="This will make debug on", action="store_true"
+    )
+    parser.add_argument(
+        "--use-app-name-for-profile",
+        help="Use the application name for the profile's name",
+        action="store_true",
+        default=os.environ.get("CENTRIFY_USE_APP_NAME_FOR_PROFILE", "") == "true",
+    )
     args = parser.parse_args()
 
     set_logging()
