@@ -15,4 +15,4 @@
 
 from __future__ import print_function
 
-from . import assumerolesaml  # NOQA
+from . import assumerolesaml, util  # NOQA

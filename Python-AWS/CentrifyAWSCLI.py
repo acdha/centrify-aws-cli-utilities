@@ -35,6 +35,7 @@ import traceback
 from getpass import getuser
 
 from aws import assumerolesaml
+from aws.util import load_aws_credentials
 from centrify import cenapp, cenauth, uprest
 from centrify.util import safe_input
 from config import environment, readconfig
@@ -83,7 +84,7 @@ def select_app(awsapps):
 
 
 class ArgparseSensibleFormatter(
-    argparse.RawDescriptionHelpFormatter, argparse.ArgumentDefaultsHelpFormatter
+    argparse.RawDescriptionHelpFormatter, argparse.ArgumentDefaultsHelpFormatter,
 ):
     pass
 
@@ -127,6 +128,11 @@ def client_main():
         help="Use the application name for the profile's name",
         action="store_true",
         default=os.environ.get("CENTRIFY_USE_APP_NAME_FOR_PROFILE", "") == "true",
+    )
+    parser.add_argument(
+        "--renew-all-sessions",
+        action="store_true",
+        help="Renew sessions for all previously-used profiles",
     )
     args = parser.parse_args()
 
@@ -174,43 +180,77 @@ def client_main():
         print("No AWS Applications to select for the user " + user, file=sys.stderr)
         return
 
-    pattern = re.compile("[^0-9.]")
-    count = 1
-    profilecount = [0] * len(awsapps)
-    while True:
-        number = select_app(awsapps)
-        if number == "":
-            continue
-        if re.match(pattern, number):
-            print("Exiting..")
-            break
-        if int(number) - 1 >= len(awsapps):
-            continue
+    if args.renew_all_sessions:
+        # FIXME: refactor this into a separate method and continue cleaning up the legacy data structures
+        config, _ = load_aws_credentials()
+        for section in config.sections():
+            app_name = config.get(section, "centrify_application_name", fallback=None)
+            role = config.get(section, "centrify_role", fallback=None)
 
-        appkey = awsapps[int(number) - 1]["AppKey"]
-        display_name = awsapps[int(number) - 1]["DisplayName"]
-        print("Calling app with key : " + appkey)
-        encoded_saml = cenapp.call_app(session, appkey, "1.0", environment, proxy)
+            if not app_name or not role:
+                continue
+
+            print("Renewing %s session as %s" % (app_name, role))
+
+            try:
+                app_saml = cenapp.call_app(session, app_name, "1.0", environment, proxy)
+                saml_providers, all_roles = cenapp.extract_roles_from_encoded_saml(
+                    app_saml
+                )
+
+                provider = saml_providers[all_roles.index(role)]
+
+                assumerolesaml.assume_role_with_saml(
+                    role,
+                    provider,
+                    app_saml,
+                    app_name,
+                    region,
+                    use_app_name_for_profile=args.use_app_name_for_profile,
+                )
+            except Exception as exc:
+                logging.exception(
+                    "Unable to renew session for application %s as %s", app_name, role
+                )
+                print("Renewal failed: %s" % exc, file=sys.stderr)
+    else:
+        pattern = re.compile("[^0-9.]")
+        count = 1
+        profilecount = [0] * len(awsapps)
         while True:
-            _quit, awsinputs = cenapp.choose_role(encoded_saml, appkey)
-            if _quit == "q":
+            number = select_app(awsapps)
+            if number == "":
+                continue
+            if re.match(pattern, number):
+                print("Exiting..")
                 break
-            count = profilecount[int(number) - 1]
-            assumed = assumerolesaml.assume_role_with_saml(
-                awsinputs.role,
-                awsinputs.provider,
-                awsinputs.saml,
-                display_name,
-                region,
-                use_app_name_for_profile=args.use_app_name_for_profile,
-            )
-            if assumed:
-                profilecount[int(number) - 1] = count + 1
-            if _quit == "one_role_quit":
-                break
+            if int(number) - 1 >= len(awsapps):
+                continue
 
-        if len(awsapps) == 1:
-            break
+            appkey = awsapps[int(number) - 1]["AppKey"]
+            display_name = awsapps[int(number) - 1]["DisplayName"]
+            print("Calling app with key : " + appkey)
+            encoded_saml = cenapp.call_app(session, appkey, "1.0", environment, proxy)
+            while True:
+                _quit, awsinputs = cenapp.choose_role(encoded_saml, appkey)
+                if _quit == "q":
+                    break
+                count = profilecount[int(number) - 1]
+                assumed = assumerolesaml.assume_role_with_saml(
+                    awsinputs.role,
+                    awsinputs.provider,
+                    awsinputs.saml,
+                    display_name,
+                    region,
+                    use_app_name_for_profile=args.use_app_name_for_profile,
+                )
+                if assumed:
+                    profilecount[int(number) - 1] = count + 1
+                if _quit == "one_role_quit":
+                    break
+
+            if len(awsapps) == 1:
+                break
 
     logging.info("Done")
     logging.shutdown()

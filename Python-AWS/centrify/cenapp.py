@@ -47,7 +47,6 @@ def handle_app_click(session, appkey, version, environment, proxy):
     if "elevate" in response.url:
         url = response.url
         parsed_url = urlparse.urlparse(url)
-        elav = urlparse.parse_qs(parsed_url.query)["elevate"][0]
         chal = urlparse.parse_qs(parsed_url.query)["challengeId"][0]
         ele_session = cenauth.elevate(
             session, appkey, headers, response, version, environment, proxy
@@ -86,7 +85,7 @@ def call_app(session, appkey, version, environment, proxy):
     return encoded_saml
 
 
-def choose_role(encoded_saml, appkey):
+def extract_roles_from_encoded_saml(encoded_saml):
     logging.info("Decoding SAML ....")
     decoded_saml = base64.b64decode(encoded_saml)
     logging.info(decoded_saml)
@@ -102,11 +101,17 @@ def choose_role(encoded_saml, appkey):
     awsroles.sort()
 
     allroles = []
-    saml_provider = []
+    saml_providers = []
     for awsrole in awsroles:
         chunks = awsrole.split(",")
         allroles.append(chunks[0])
-        saml_provider.append(chunks[1])
+        saml_providers.append(chunks[1])
+
+    return saml_providers, allroles
+
+
+def choose_role(encoded_saml, appkey):
+    saml_providers, all_roles = extract_roles_from_encoded_saml(encoded_saml)
 
     printline()
     print(Fore.GREEN)
@@ -116,9 +121,9 @@ def choose_role(encoded_saml, appkey):
     print("Type 'q' to exit.")
     print(Style.RESET_ALL)
     print("Please choose the role you would like to assume -")
-    if len(allroles) > 1:
+    if len(all_roles) > 1:
         i = 1
-        for role in allroles:
+        for role in all_roles:
             print("[", i, "]: ", role)
             i = i + 1
         try:
@@ -128,21 +133,21 @@ def choose_role(encoded_saml, appkey):
             selection = int(inputstring)
         except ValueError:
             return "q", None
-        if selection > len(allroles):
+        if selection > len(all_roles):
             print("You have selected a wrong role..", file=sys.stderr)
             sys.exit(0)
     else:
-        print("1: " + allroles[0])
+        print("1: " + all_roles[0])
         print("Selecting above role. ")
         selection = 1
 
-    role = allroles[selection - 1]
+    role = all_roles[selection - 1]
 
-    principle = saml_provider[selection - 1]
+    principle = saml_providers[selection - 1]
     print("You Chose : ", role)
     print("Your SAML Provider : ", principle)
 
     awsinputs = AwsInputs(role, principle, encoded_saml)
-    if len(allroles) == 1:
+    if len(all_roles) == 1:
         return "one_role_quit", awsinputs
     return "go", awsinputs

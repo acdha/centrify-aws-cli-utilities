@@ -14,21 +14,26 @@
 
 from __future__ import print_function
 
-import configparser
 import logging
 import re
 import sys
-from os.path import expanduser, join
 
 import boto3
 from botocore.exceptions import ClientError
 
+from .util import load_aws_credentials
 
-def write_cred(cred, display_name, region, role, use_app_name_for_profile=False):
-    home = expanduser("~")
-    cred_file = join(home, ".aws", "credentials")
-    config = configparser.RawConfigParser()
-    config.read(cred_file)
+
+def write_cred(
+    cred,
+    display_name,
+    region,
+    role,
+    use_app_name_for_profile=False,
+    credentials_filename=None,
+):
+    config, credentials_filename = load_aws_credentials(path=credentials_filename)
+
     print("Display Name : " + display_name)
     rolesplit = role.split("/")
     profile_name = rolesplit[1] + "_profile"
@@ -43,12 +48,12 @@ def write_cred(cred, display_name, region, role, use_app_name_for_profile=False)
         config.add_section(section)
     config.set(section, "output", "json")
     config.set(section, "region", region)
-    config.set(section, "centrify_application", display_name)
+    config.set(section, "centrify_application_name", display_name)
     config.set(section, "centrify_role", role)
     config.set(section, "aws_access_key_id", cred["Credentials"]["AccessKeyId"])
     config.set(section, "aws_secret_access_key", cred["Credentials"]["SecretAccessKey"])
     config.set(section, "aws_session_token", cred["Credentials"]["SessionToken"])
-    with open(cred_file, "w+") as credentials:
+    with open(credentials_filename, "w+") as credentials:
         config.write(credentials)
     print("\n\n")
     print("-" * 80)
