@@ -19,9 +19,10 @@ import logging
 
 
 class AuthResponse(object):
-    '''
+    """
     Authentication Response received
-    '''
+    """
+
     def __init__(self, response, tenant_url):
         self.response = response
         self.tenant_url = tenant_url
@@ -29,7 +30,6 @@ class AuthResponse(object):
         logging.info("------ Json Response from the REST call ---------")
         logging.info(json_resp)
         logging.info("--------------------------------------------------")
-
 
     def get_success_result(self):
         json_resp = json.loads(self.response.text)

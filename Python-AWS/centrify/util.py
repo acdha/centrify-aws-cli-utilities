@@ -17,6 +17,7 @@ from __future__ import print_function
 def printline(n=80):
     print("-" * n)
 
+
 def printobj(obj):
     printline()
     print(obj)

@@ -15,10 +15,9 @@ from __future__ import print_function
 
 
 class AwsInputs(object):
-    '''
+    """
     Object contains saml, selected role and the provider
-    '''
-
+    """
 
     def __init__(self, role, provider, saml):
         self.role = role

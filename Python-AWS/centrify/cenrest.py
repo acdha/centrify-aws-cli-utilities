@@ -24,7 +24,7 @@ from colorama import Back, Fore, Style
 
 
 def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
-    endpoint = endpoint+method
+    endpoint = endpoint + method
     if "x-centrify-native-client" not in headers:
         headers["x-centrify-native-client"] = "true"
     if "content-type" not in headers:
@@ -33,37 +33,60 @@ def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
         headers["cache-control"] = "no-cache"
 
     logging.info("Calling " + endpoint + " with headers : " + str(headers))
-#    logging.info("And body : " + str(body))
-    if (debug):
+    #    logging.info("And body : " + str(body))
+    if debug:
         logging.info("Request : " + str(body))
 
-    try :
-        response = requests.post(endpoint, headers=headers, verify=certpath, proxies=proxy, data=body)
-    except Exception as e :
+    try:
+        response = requests.post(
+            endpoint, headers=headers, verify=certpath, proxies=proxy, data=body
+        )
+    except Exception as e:
         logging.exception("Error in calling " + endpoint + " - ")
         print(Fore.RED + "Error in calling " + endpoint + " - Please refer logs. ")
         print(Style.RESET_ALL)
         sys.exit(0)
 
-#    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
+    #    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
 
-#    Temporary Change
-#    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
+    #    Temporary Change
+    #    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
     logging.info("Received Response : " + response.text)
     return response
 
-#Following method is not used currently. It will be used if redirects are needed.
-def call_rest_post_redirect(endpoint, method, body, headers, certpath, proxy, allow_redirects=True):
+
+# Following method is not used currently. It will be used if redirects are needed.
+def call_rest_post_redirect(
+    endpoint, method, body, headers, certpath, proxy, allow_redirects=True
+):
     if "x-centrify-native-client" not in headers:
         headers["x-centrify-native-client"] = "true"
     if "content-type" not in headers:
         headers["content-type"] = "application/json"
     if "cache-control" not in headers:
         headers["cache-control"] = "no-cache"
-    endpoint = endpoint+method
+    endpoint = endpoint + method
     logging.info("Calling " + endpoint)
-    logging.info("Method : " + method + " Request Body : " + str(body) + " Headers : " + str(headers) + " Proxy : " + str(proxy))
-    logging.info("Calling " + endpoint + " with headers : " + str(headers) + " and data : " + str(body))
-    response = requests.post(endpoint, headers=headers, verify=certpath, proxies=proxy, data=body)
+    logging.info(
+        "Method : "
+        + method
+        + " Request Body : "
+        + str(body)
+        + " Headers : "
+        + str(headers)
+        + " Proxy : "
+        + str(proxy)
+    )
+    logging.info(
+        "Calling "
+        + endpoint
+        + " with headers : "
+        + str(headers)
+        + " and data : "
+        + str(body)
+    )
+    response = requests.post(
+        endpoint, headers=headers, verify=certpath, proxies=proxy, data=body
+    )
     logging.info("Received Response : " + response.text)
     return response

@@ -50,23 +50,36 @@ def write_cred(cred, count, display_name, region, role, use_app_name_for_profile
         config.write(credentials)
     print("\n\n")
     print("-" * 80)
-    print("Your profile is created. It will expire at " + str(cred["Credentials"]["Expiration"]))
+    print(
+        "Your profile is created. It will expire at "
+        + str(cred["Credentials"]["Expiration"])
+    )
     print("Use --profile " + section + " for the commands")
     print("Example - ")
     print("aws s3 ls --profile " + section)
     print("-" * 80)
 
 
-
-def assume_role_with_saml(role, principle, saml, count, display_name, region, use_app_name_for_profile=False):
+def assume_role_with_saml(
+    role, principle, saml, count, display_name, region, use_app_name_for_profile=False
+):
     stsclient = boto3.client("sts")
 
     try:
-        cred = stsclient.assume_role_with_saml(RoleArn=role, PrincipalArn=principle, SAMLAssertion=saml)
+        cred = stsclient.assume_role_with_saml(
+            RoleArn=role, PrincipalArn=principle, SAMLAssertion=saml
+        )
     except ClientError as e:
         logging.error("Access denied: %s", e, exc_info=True)
         print("Access Denied: %s" % e, file=sys.stderr)
         return False
 
-    write_cred(cred, count, display_name, region, role, use_app_name_for_profile=use_app_name_for_profile)
+    write_cred(
+        cred,
+        count,
+        display_name,
+        region,
+        role,
+        use_app_name_for_profile=use_app_name_for_profile,
+    )
     return True

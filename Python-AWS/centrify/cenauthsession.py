@@ -15,9 +15,9 @@ from __future__ import print_function
 
 
 class AuthSession(object):
-    '''
+    """
     Authentication Result, which will store session id and session token (i.e. aspxauth cookie value)
-    '''
+    """
 
     def __init__(self, endpoint, username, session_id, session_token):
         self.endpoint = endpoint

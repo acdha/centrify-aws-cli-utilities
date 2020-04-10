@@ -19,9 +19,10 @@ import logging
 
 
 class AdvAuthRequest(object):
-    '''
+    """
     Request object for advanced authentication
-    '''
+    """
+
     def __init__(self, tenant_id, session_id, mechanism_id, password):
         self.tenant_id = tenant_id
         self.session_id = session_id
@@ -39,8 +40,10 @@ class AdvAuthRequest(object):
         message["MechanismId"] = self.mechanism_id
         message["Action"] = "Answer"
         message["Answer"] = self.password
-        json_body=json.dumps(message)
-        logging.info("---------- Advance Authentication Passwd Request JSON body ------------")
+        json_body = json.dumps(message)
+        logging.info(
+            "---------- Advance Authentication Passwd Request JSON body ------------"
+        )
         return json_body
 
     def get_adv_auth_json_startoob(self):
@@ -49,8 +52,10 @@ class AdvAuthRequest(object):
         message["SessionId"] = self.session_id
         message["MechanismId"] = self.mechanism_id
         message["Action"] = "StartOOB"
-        json_body=json.dumps(message)
-        logging.info("---------- Advance Authentication StartOOB Request JSON body ------------")
+        json_body = json.dumps(message)
+        logging.info(
+            "---------- Advance Authentication StartOOB Request JSON body ------------"
+        )
         return json_body
 
     def get_adv_auth_json_poll(self):
@@ -59,6 +64,8 @@ class AdvAuthRequest(object):
         message["SessionId"] = self.session_id
         message["MechanismId"] = self.mechanism_id
         message["Action"] = "Poll"
-        json_body=json.dumps(message)
-        logging.info("---------- Advance Authentication StartOOB Request JSON body ------------")
+        json_body = json.dumps(message)
+        logging.info(
+            "---------- Advance Authentication StartOOB Request JSON body ------------"
+        )
         return json_body

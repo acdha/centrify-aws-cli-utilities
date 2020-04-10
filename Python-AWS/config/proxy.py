@@ -18,14 +18,12 @@ import logging
 
 
 class Proxy(object):
-
     def __init__(self, isproxy, proxy_http, proxy_https, proxy_user, proxy_password):
         self.isproxy = isproxy
         self.proxy_http = proxy_http
         self.proxy_https = proxy_https
         self.proxy_user = proxy_user
         self.proxy_password = proxy_password
-
 
     def log(self):
         logging.info("------  Proxy -------")
