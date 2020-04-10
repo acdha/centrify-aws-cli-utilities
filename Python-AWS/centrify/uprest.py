@@ -36,5 +36,5 @@ def get_applications(user, session, environment, proxy):
         proxy,
         environment.get_debug(),
     )
-    logging.info(response.text)
+    logging.debug(response.text)
     return response.json()

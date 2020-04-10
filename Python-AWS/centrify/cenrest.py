@@ -15,10 +15,8 @@
 from __future__ import print_function
 
 import logging
-import sys
 
 import requests
-from colorama import Fore, Style
 
 
 def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
@@ -30,21 +28,18 @@ def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
     if "cache-control" not in headers:
         headers["cache-control"] = "no-cache"
 
-    logging.info("Calling " + endpoint + " with headers : " + str(headers))
-    if debug:
-        logging.info("Request : " + str(body))
+    logging.info("Calling %s with headers: %s", endpoint, headers)
+    logging.debug("Request: %s", body)
 
     try:
         response = requests.post(
             endpoint, headers=headers, verify=certpath, proxies=proxy, data=body
         )
     except Exception:
-        logging.exception("Error in calling " + endpoint + " - ")
-        print(Fore.RED + "Error in calling " + endpoint + " - Please refer logs. ")
-        print(Style.RESET_ALL)
-        sys.exit(0)
+        logging.exception("Error in calling %s ", endpoint)
+        raise
 
-    logging.info("Received Response : " + response.text)
+    logging.debug("Received Response: %s", response.text)
     return response
 
 
@@ -60,7 +55,7 @@ def call_rest_post_redirect(
         headers["cache-control"] = "no-cache"
     endpoint = endpoint + method
     logging.info("Calling " + endpoint)
-    logging.info(
+    logging.debug(
         "Method : "
         + method
         + " Request Body : "
@@ -70,7 +65,7 @@ def call_rest_post_redirect(
         + " Proxy : "
         + str(proxy)
     )
-    logging.info(
+    logging.debug(
         "Calling "
         + endpoint
         + " with headers : "
@@ -81,5 +76,5 @@ def call_rest_post_redirect(
     response = requests.post(
         endpoint, headers=headers, verify=certpath, proxies=proxy, data=body
     )
-    logging.info("Received Response : " + response.text)
+    logging.debug("Received Response %s", response)
     return response

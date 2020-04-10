@@ -31,9 +31,9 @@ import logging
 import os
 import re
 import sys
-import traceback
 from getpass import getuser
 
+import coloredlogs
 from aws import assumerolesaml
 from aws.util import load_aws_credentials
 from centrify import cenapp, cenauth, uprest
@@ -62,16 +62,6 @@ def login_instance(proxy, environment):
     return session, user
 
 
-def set_logging():
-    logging.basicConfig(
-        handlers=[logging.FileHandler("centrify-python-aws.log", "w", "utf-8")],
-        level=logging.INFO,
-        format="%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s",
-    )
-    logging.info("Starting App..")
-    print("Logfile - centrify-python-aws.log")
-
-
 def select_app(awsapps):
     print("Select the aws app to login. Type 'quit' or 'q' to exit")
     count = 1
@@ -89,7 +79,33 @@ class ArgparseSensibleFormatter(
     pass
 
 
-def client_main():
+def configure_logging(verbosity, log_filename=None):
+    if verbosity > 1:
+        desired_level = logging.DEBUG
+    elif verbosity > 0:
+        desired_level = logging.INFO
+    else:
+        desired_level = logging.WARNING
+
+    log_format = "%(asctime)s %(filename)s %(funcName)s %(lineno)d %(message)s"
+
+    if sys.stderr.isatty():
+        coloredlogs.install(level=desired_level, reconfigure=True, format=log_format)
+    else:
+        logging.basicConfig(
+            handlers=[logging.StreamHandler(stream=sys.stderr)],
+            level=desired_level,
+            format=log_format,
+        )
+
+    if log_filename:
+        logging.getLogger().addHandler(logging.FileHandler(log_filename, "w", "utf-8"))
+
+    for handler in logging.getLogger().handlers:
+        handler.setLevel(desired_level)
+
+
+def main():
     parser = argparse.ArgumentParser(
         description="Use Centrify SSO to populate a local AWS profile with short-term credentials",
         formatter_class=ArgparseSensibleFormatter,
@@ -134,9 +150,23 @@ def client_main():
         action="store_true",
         help="Renew sessions for all previously-used profiles",
     )
+    parser.add_argument(
+        "--log-file",
+        type=argparse.FileType("w+"),
+        help="Record log in this file along with the console",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        dest="verbosity",
+        default=0,
+        action="count",
+        help="Display more progress information (use multiple times for more detail)",
+    )
+
     args = parser.parse_args()
 
-    set_logging()
+    configure_logging(args.verbosity, args.log_file)
 
     # FIXME: assume no if the file doesn't exist
     try:
@@ -174,10 +204,10 @@ def client_main():
 
     awsapps.sort(key=lambda i: i["DisplayName"])
 
-    logging.info("AWSapps : %s", awsapps)
+    logging.debug("AWSapps: %s", awsapps)
 
     if not awsapps:
-        print("No AWS Applications to select for the user " + user, file=sys.stderr)
+        logging.error("No AWS Applications to select for the user %s", user)
         return
 
     if args.renew_all_sessions:
@@ -190,7 +220,7 @@ def client_main():
             if not app_name or not role:
                 continue
 
-            print("Renewing %s session as %s" % (app_name, role))
+            logging.info("Renewing %s session as %s" % (app_name, role))
 
             try:
                 app_saml = cenapp.call_app(session, app_name, "1.0", environment, proxy)
@@ -208,11 +238,10 @@ def client_main():
                     region,
                     use_app_name_for_profile=args.use_app_name_for_profile,
                 )
-            except Exception as exc:
+            except Exception:
                 logging.exception(
                     "Unable to renew session for application %s as %s", app_name, role
                 )
-                print("Renewal failed: %s" % exc, file=sys.stderr)
     else:
         pattern = re.compile("[^0-9.]")
         count = 1
@@ -222,14 +251,13 @@ def client_main():
             if number == "":
                 continue
             if re.match(pattern, number):
-                print("Exiting..")
                 break
             if int(number) - 1 >= len(awsapps):
                 continue
 
             appkey = awsapps[int(number) - 1]["AppKey"]
             display_name = awsapps[int(number) - 1]["DisplayName"]
-            print("Calling app with key : " + appkey)
+            logging.info("Calling app with key: %s %s", appkey, display_name)
             encoded_saml = cenapp.call_app(session, appkey, "1.0", environment, proxy)
             while True:
                 _quit, awsinputs = cenapp.choose_role(encoded_saml, appkey)
@@ -252,21 +280,6 @@ def client_main():
             if len(awsapps) == 1:
                 break
 
-    logging.info("Done")
-    logging.shutdown()
 
-
-try:
-    client_main()
-except SystemExit as se:
-    if se.code != 0:
-        print("Program Exited due to error or wrong input...", file=sys.stderr)
-        logging.exception("Program Exited due to error or wrong input..")
-except Exception:
-    logging.exception("Exiting due to unhandle exception")
-    # FIXME: configure logging to display to the console as well
-    print("Program Exited due to unhandled exception...", file=sys.stderr)
-    exc_type, exc_value, exc_traceback = sys.exc_info()
-    traceback.print_exception(exc_type, exc_value, exc_traceback)
-finally:
-    logging.shutdown()
+if __name__ == "__main__":
+    main()

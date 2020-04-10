@@ -27,7 +27,6 @@ from centrify.authresponse import AuthResponse
 from centrify.cenauthsession import AuthSession
 from centrify.cenrest import call_rest_post
 from centrify.util import safe_input
-from colorama import Fore, Style
 
 result = []
 done = False
@@ -47,21 +46,20 @@ def start_authentication(username, version, proxy, environment):
     )
     authresponse = AuthResponse(response, endpoint)
     success_result = authresponse.get_success_result()
-    if success_result == False:
-        print("Invalid User", file=sys.stderr)
-        sys.exit(0)
 
-    if success_result == True:
+    if not success_result:
+        raise RuntimeError("Authentication failed")
+
+    if success_result:
         try:
             tenant_url = authresponse.get_tenant_url()
-        except KeyError as e:
-            logging.error(format(e))
-            logging.info("Seems we have tenant URL already ")
+        except KeyError:
+            logging.info("Unable to get tenant_url")
             return authresponse
 
     endpoint = "https://" + tenant_url
-    logging.info("Redirecting to " + endpoint)
-    logging.info("Authenticating on the tenant..")
+    logging.debug("Redirecting to %s", endpoint)
+    logging.info("Authenticating on the tenant...")
     response = call_rest_post(
         endpoint, method, json_body, headers, certpath, proxy, environment.get_debug()
     )
@@ -72,16 +70,14 @@ def start_authentication(username, version, proxy, environment):
 def advance_authentication(
     tenant_response, endpoint, username, version, proxy, environment
 ):
-    certpath = environment.get_certpath()
     method = "/Security/AdvanceAuthentication"
-    headers = {}
     challenges = tenant_response.get_challenges()
     challenge_count = 0
     for challenge in challenges:
-        logging.info("Starting Challenge " + str(challenge_count))
+        logging.info("Starting Challenge %s", challenge_count)
         challenge_count = challenge_count + 1
         total_mechanism = len(challenge["Mechanisms"])
-        logging.info("There are " + str(total_mechanism) + " mechanisms")
+        logging.debug("There are %s mechanisms", total_mechanism)
 
         if total_mechanism > 1:
             again = True
@@ -101,7 +97,7 @@ def advance_authentication(
                 again = False
         else:
             mechanism = challenge["Mechanisms"][0]
-        logging.info("Mechanism is " + str(mechanism))
+        logging.info("Mechanism is %s", mechanism)
         session = advance_auth_for_mech(
             mechanism, tenant_response, username, endpoint, method, proxy, environment
         )
@@ -152,12 +148,10 @@ def handle_unix(
         authresponse = AuthResponse(authresp, endpoint)
         success_result = authresponse.get_success_result()
         summary = authresponse.get_summary()
-        if success_result == False:
-            print(Fore.RED + "Wrong Credentials.. Exiting..")
-            print(Style.RESET_ALL)
-            sys.exit(0)
+        if not success_result:
+            raise RuntimeError("Authentication failed")
     else:
-        print("Waiting for completing authentication mechanism.. ")
+        logging.debug("Waiting for completing authentication mechanism.. ")
         json_req = request.get_adv_auth_json_poll()
         while True:
             authresp = call_rest_post(
@@ -172,7 +166,7 @@ def handle_unix(
             resp = AuthResponse(authresp, endpoint)
             success_result = resp.get_success_result()
             summary = resp.get_summary()
-            logging.info("Success : " + str(success_result) + " Summary : " + summary)
+            logging.info("Success: %s Summary: %s", success_result, summary)
             if success_result == True and summary != "OobPending":
                 break
             if success_result != True:
@@ -198,38 +192,16 @@ def handle_text(
     )
     authresponse = AuthResponse(authresp, endpoint)
     success_result = authresponse.get_success_result()
-    logging.info("Is it Successful : " + str(success_result))
+    logging.info("Is it Successful: %s", success_result)
     summary = authresponse.get_summary()
-    logging.info(summary)
-    if success_result == False:
+    logging.debug(summary)
+    if not success_result:
         raise RuntimeError("Wrong Credentials")
 
     global result
     result.append(authresp)
     result.append(success_result)
     result.append(summary)
-
-
-"""
-Currently not used as we want to keep platform code same
-def handle_windows(mechanism, tenant_response, username, endpoint, method, certpath, proxy, request, json_req):
-    queue = Queue()
-    headers = {}
-    mechanism_id = mechanism['MechanismId']
-    session_id = tenant_response.get_sessionid()
-    tenant_id = tenant_response.get_tenantid()
-    p_poll = Thread(target=poll, args=[request, endpoint, method, json_req, headers, certpath, proxy])
-    p_poll.start()
-    p_userinput = Thread(target=user_input, args=[mechanism,request, endpoint, method, json_req, headers, certpath, proxy, tenant_id, session_id, mechanism_id, queue])
-    p_userinput.start()
-    p_poll.join()
-    p_userinput.join()
-    if (p_userinput.is_alive()):
-        logging.info("User input is still alive")
-    if (p_poll.is_alive()):
-        logging.info("Poll is still alive")
-    logging.info("Received Result ...")
-"""
 
 
 def handle_text_oob(
@@ -239,14 +211,14 @@ def handle_text_oob(
     mechanism_id = mechanism["MechanismId"]
     session_id = tenant_response.get_sessionid()
     tenant_id = tenant_response.get_tenantid()
-    logging.info("Starting StartTextOob...")
+    logging.debug("Starting StartTextOob...")
     request = AdvAuthRequest(tenant_id, session_id, mechanism_id, "")
     json_req = request.get_adv_auth_json_startoob()
     headers = {}
     authresp = call_rest_post(
         endpoint, method, json_req, headers, certpath, proxy, environment.get_debug()
     )
-    logging.info("The response is StartOob req" + authresp.text)
+    logging.debug("The response is StartOob req" + authresp.text)
     handle_unix(
         mechanism,
         tenant_response,
@@ -267,7 +239,7 @@ def advance_auth_for_mech(
     mechanism_id = mechanism["MechanismId"]
     session_id = tenant_response.get_sessionid()
     tenant_id = tenant_response.get_tenantid()
-    logging.info("The AnswerType is : " + mechanism["AnswerType"])
+    logging.debug("The AnswerType is: %s", mechanism["AnswerType"])
     if mechanism["AnswerType"] == "Text" or mechanism["AnswerType"] == "StartTextOob":
         if mechanism["AnswerType"] == "Text":
             handle_text(
@@ -293,12 +265,11 @@ def advance_auth_for_mech(
         success_result = result[1]
         summary = result[2]
         del result[:]
-        if success_result == False:
-            logging.info("Authentication is not successful..")
-            print("Authentication is not successful..")
-            sys.exit()
+        if not success_result:
+            raise RuntimeError("Authentication is not successful..")
+
     elif mechanism["AnswerType"] == "StartOob":
-        logging.info("StartOob..")
+        logging.debug("StartOob..")
         request = AdvAuthRequest(tenant_id, session_id, mechanism_id, "")
         json_req = request.get_adv_auth_json_startoob()
         headers = {}
@@ -311,7 +282,7 @@ def advance_auth_for_mech(
             proxy,
             environment.get_debug(),
         )
-        print(mechanism["PromptSelectMech"] + " Waiting ......")
+        logging.debug("Waiting for %s", mechanism["PromptSelectMech"])
         json_req = request.get_adv_auth_json_poll()
         while True:
             sys.stdout.write(".")
@@ -327,17 +298,17 @@ def advance_auth_for_mech(
             resp = AuthResponse(authresp, endpoint)
             success_result = resp.get_success_result()
             summary = resp.get_summary()
-            if success_result == True and summary != "OobPending":
+            if success_result and summary != "OobPending":
                 break
-            if success_result != True:
+            if not success_result:
                 break
             time.sleep(2)
         print()
         logging.info("Is it Successful : " + str(success_result))
-        logging.info(summary)
+        logging.debug(summary)
     if success_result == True and summary == "LoginSuccess":
         session_token = authresp.cookies[".ASPXAUTH"]
-        logging.info(session_token)
+        logging.debug(session_token)
         session = AuthSession(endpoint, username, session_id, session_token)
         return session
 

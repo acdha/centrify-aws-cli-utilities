@@ -33,6 +33,6 @@ class HtmlResponse(object):
         htmlparser.feed(self.html_response)
         saml = htmlparser.get_saml()
         htmlparser.clean()
-        logging.info("------------ SAML ---------------")
-        logging.info(saml)
+        logging.debug("------------ SAML ---------------")
+        logging.debug(saml)
         return saml

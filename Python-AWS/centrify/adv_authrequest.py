@@ -28,8 +28,8 @@ class AdvAuthRequest(object):
         self.session_id = session_id
         self.mechanism_id = mechanism_id
         self.password = password
-        logging.info("--------- Creating Adv Authentiation Request ----------")
-        logging.info(
+        logging.debug("--------- Creating Adv Authentiation Request ----------")
+        logging.debug(
             "Tenant %s. Session %s. Mechanism %s.", tenant_id, session_id, mechanism_id
         )
 
@@ -41,7 +41,7 @@ class AdvAuthRequest(object):
         message["Action"] = "Answer"
         message["Answer"] = self.password
         json_body = json.dumps(message)
-        logging.info(
+        logging.debug(
             "---------- Advance Authentication Passwd Request JSON body ------------"
         )
         return json_body
@@ -53,7 +53,7 @@ class AdvAuthRequest(object):
         message["MechanismId"] = self.mechanism_id
         message["Action"] = "StartOOB"
         json_body = json.dumps(message)
-        logging.info(
+        logging.debug(
             "---------- Advance Authentication StartOOB Request JSON body ------------"
         )
         return json_body
@@ -65,7 +65,7 @@ class AdvAuthRequest(object):
         message["MechanismId"] = self.mechanism_id
         message["Action"] = "Poll"
         json_body = json.dumps(message)
-        logging.info(
+        logging.debug(
             "---------- Advance Authentication StartOOB Request JSON body ------------"
         )
         return json_body

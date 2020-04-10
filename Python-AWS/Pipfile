@@ -20,6 +20,7 @@ bandit = "*"
 requests = "*"
 boto3 = "*"
 colorama = "*"
+coloredlogs = "*"
 
 [requires]
 python_version = "3.7"

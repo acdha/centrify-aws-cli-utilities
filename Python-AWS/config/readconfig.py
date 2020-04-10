@@ -15,14 +15,8 @@
 from __future__ import print_function
 
 import configparser
-import logging
 
 from config import proxy
-
-
-def set_logging():
-    logging.basicConfig(filename="config.log", level=logging.INFO)
-    logging.info("Starting App..")
 
 
 def read_proxy():

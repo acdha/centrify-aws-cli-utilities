@@ -43,7 +43,9 @@ def handle_app_click(session, appkey, version, environment, proxy):
         proxy,
         environment.get_debug(),
     )
-    logging.info("Call App Response URL : " + response.url)
+
+    logging.debug("Call App Response URL: %s", response.url)
+
     if "elevate" in response.url:
         url = response.url
         parsed_url = urlparse.urlparse(url)
@@ -65,15 +67,15 @@ def handle_app_click(session, appkey, version, environment, proxy):
             proxy,
             environment.get_debug(),
         )
-        logging.info("Call App Response URL - After Elevate : " + response.url)
+        logging.debug("Call App Response URL - After Elevate: %s", response.url)
     return response
 
 
 def call_app(session, appkey, version, environment, proxy):
     response = handle_app_click(session, appkey, version, environment, proxy)
     html_response = HtmlResponse(response.text)
-    logging.info("------------------- App Response ----------------")
-    logging.info(html_response)
+    logging.debug("------------------- App Response ----------------")
+    logging.debug(html_response)
     encoded_saml = html_response.get_saml()
     if encoded_saml == "":
         logging.error(
@@ -86,9 +88,9 @@ def call_app(session, appkey, version, environment, proxy):
 
 
 def extract_roles_from_encoded_saml(encoded_saml):
-    logging.info("Decoding SAML ....")
+    logging.debug("Decoding SAML ....")
     decoded_saml = base64.b64decode(encoded_saml)
-    logging.info(decoded_saml)
+    logging.debug(decoded_saml)
     root = ET.fromstring(decoded_saml)
     awsroles = []
     for saml2attribute in root.iter("{urn:oasis:names:tc:SAML:2.0:assertion}Attribute"):

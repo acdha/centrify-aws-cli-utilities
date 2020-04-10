@@ -35,6 +35,6 @@ class AuthRequest(object):
         message["User"] = self.username
         message["Version"] = self.version
         json_body = json.dumps(message)
-        logging.info("--------- Body of Start Authentication Request --------------")
-        logging.info(json_body)
+        logging.debug("--------- Body of Start Authentication Request --------------")
+        logging.debug(json_body)
         return json_body

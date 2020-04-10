@@ -16,7 +16,6 @@ from __future__ import print_function
 
 import logging
 import re
-import sys
 
 import boto3
 from botocore.exceptions import ClientError
@@ -78,7 +77,6 @@ def assume_role_with_saml(
         )
     except ClientError as e:
         logging.error("Access denied: %s", e, exc_info=True)
-        print("Access Denied: %s" % e, file=sys.stderr)
         return False
 
     write_cred(
