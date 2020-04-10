@@ -200,7 +200,6 @@ def client_main():
                 awsinputs.role,
                 awsinputs.provider,
                 awsinputs.saml,
-                count,
                 display_name,
                 region,
                 use_app_name_for_profile=args.use_app_name_for_profile,

@@ -24,7 +24,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 
-def write_cred(cred, count, display_name, region, role, use_app_name_for_profile=False):
+def write_cred(cred, display_name, region, role, use_app_name_for_profile=False):
     home = expanduser("~")
     cred_file = join(home, ".aws", "credentials")
     config = configparser.RawConfigParser()
@@ -63,7 +63,7 @@ def write_cred(cred, count, display_name, region, role, use_app_name_for_profile
 
 
 def assume_role_with_saml(
-    role, principle, saml, count, display_name, region, use_app_name_for_profile=False
+    role, principle, saml, display_name, region, use_app_name_for_profile=False
 ):
     stsclient = boto3.client("sts")
 
@@ -78,7 +78,6 @@ def assume_role_with_saml(
 
     write_cred(
         cred,
-        count,
         display_name,
         region,
         role,
