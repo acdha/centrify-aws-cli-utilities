@@ -33,6 +33,7 @@ from centrify.cenauthsession import AuthSession
 from centrify.cenrest import call_rest_post
 from colorama import Back, Fore, Style
 from kbread import kbinput
+from centrify.util import safe_input
 
 result = []
 done = False
@@ -96,7 +97,7 @@ def advance_authentication(
                     for mechanism in value:
                         print(str(count) + " : " + mechanism["PromptSelectMech"])
                         count = count + 1
-                    choice = input("Please choose the mechanism : ")
+                    choice = safe_input("Please choose the mechanism : ")
                 try:
                     if int(choice) >= count or int(choice) <= 0:
                         continue
@@ -167,7 +168,7 @@ def get_user_choice():
     print("Select from following :")
     print("1. Use OTP")
     print("2. Use URL")
-    return input("Enter (1) or (2) to select: ")
+    return safe_input("Enter (1) or (2) to select: ")
 
 
 def handle_unix(

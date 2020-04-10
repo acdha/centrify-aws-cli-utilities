@@ -28,6 +28,7 @@ from centrify.authresponse import AuthResponse
 from centrify.awsinputs import AwsInputs
 from centrify.htmlresponse import HtmlResponse
 from centrify.util import printline
+from centrify.util import printline, safe_input
 from colorama import Fore, Style
 
 
@@ -139,7 +140,7 @@ def choose_role(encoded_saml, appkey):
         try:
             inputstring = ""
             while inputstring == "":
-                inputstring = input("Please select : ")
+                inputstring = safe_input("Please select : ")
             selection = int(inputstring)
         except ValueError:
             return "q", None

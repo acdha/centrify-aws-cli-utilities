@@ -36,6 +36,7 @@ from getpass import getuser
 
 from aws import assumerolesaml
 from centrify import cenapp, cenauth, uprest
+from centrify.util import safe_input
 from config import environment, readconfig
 
 
@@ -51,7 +52,7 @@ def get_environment(args):
 
 def login_instance(proxy, environment):
     if not environment.username:
-        user = input("Please enter your username : ")
+        user = safe_input("Please enter your username : ")
     else:
         user = environment.username
 
@@ -78,7 +79,7 @@ def select_app(awsapps):
         count = count + 1
     if len(awsapps) == 1:
         return "1"
-    return input("Enter Number : ")
+    return safe_input("Enter Number : ")
 
 
 class ArgparseSensibleFormatter(
