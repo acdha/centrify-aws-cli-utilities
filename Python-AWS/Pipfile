@@ -14,6 +14,7 @@ flake8-logging-format = "*"
 flake8-builtins = "*"
 flake8-assertive = "*"
 flake8-bugbear = "*"
+bandit = "*"
 
 [packages]
 requests = "*"
