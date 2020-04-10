@@ -43,6 +43,8 @@ def write_cred(cred, count, display_name, region, role, use_app_name_for_profile
         config.add_section(section)
     config.set(section, "output", "json")
     config.set(section, "region", region)
+    config.set(section, "centrify_application", display_name)
+    config.set(section, "centrify_role", role)
     config.set(section, "aws_access_key_id", cred["Credentials"]["AccessKeyId"])
     config.set(section, "aws_secret_access_key", cred["Credentials"]["SecretAccessKey"])
     config.set(section, "aws_session_token", cred["Credentials"]["SessionToken"])
