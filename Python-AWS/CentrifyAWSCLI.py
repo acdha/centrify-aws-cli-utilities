@@ -56,7 +56,6 @@ def login_instance(proxy, environment):
         user = environment.username
 
     version = "1.0"
-    # session = cenauth.centrify_interactive_login(environment.get_endpoint(), user, version, environment.get_certpath(), proxy)
     session = cenauth.centrify_interactive_login(user, version, proxy, environment)
     return session, user
 
