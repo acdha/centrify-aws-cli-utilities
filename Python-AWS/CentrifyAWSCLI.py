@@ -222,8 +222,8 @@ except SystemExit as se:
     if se.code != 0:
         print("Program Exited due to error or wrong input...", file=sys.stderr)
         logging.exception("Program Exited due to error or wrong input..")
-except:
-    logging.exception("Unhandled Exception")
+except Exception:
+    logging.exception("Exiting due to unhandle exception")
     # FIXME: configure logging to display to the console as well
     print("Program Exited due to unhandled exception...", file=sys.stderr)
     exc_type, exc_value, exc_traceback = sys.exc_info()
