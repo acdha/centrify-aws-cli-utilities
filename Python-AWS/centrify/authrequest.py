@@ -23,7 +23,7 @@ class AuthRequest(object):
     Message body required for Authentication requests
     """
 
-    def __init__(self, tenantid, username, version, password=""):
+    def __init__(self, tenantid, username, version, password=None):
         self.tenantid = tenantid
         self.username = username
         self.version = version
