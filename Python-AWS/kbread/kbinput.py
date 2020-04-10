@@ -27,18 +27,18 @@ shouldExit = False
 def readInput(caption, queue):
     sys.stdout.write("%s :" % caption)
     sys.stdout.flush()
-    input = ""
+    input_value = ""
     while True:
         if msvcrt.kbhit():
             byte_arr = msvcrt.getche()
             if ord(byte_arr) == 13:  # enter_key
                 break
             elif ord(byte_arr) >= 32:  # space_char
-                input += "".join(map(chr, byte_arr))
+                input_value += "".join(map(chr, byte_arr))
         global shoudExit
-        if shouldExit == True:
-            logging.info("User used the URL. No need for password input")
+        if shouldExit:
+            logging.info("User used the URL. No need for password input_value")
             return False
 
-    queue.put(input)
+    queue.put(input_value)
     return True
