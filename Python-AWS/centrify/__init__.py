@@ -15,5 +15,13 @@
 
 from __future__ import print_function
 
-from centrify import (adv_authrequest, authrequest, authresponse, cenauth,
-                      cenauthsession, cenrest, htmlparser, htmlresponse)
+from centrify import (  # noqa: F401
+    adv_authrequest,
+    authrequest,
+    authresponse,
+    cenauth,
+    cenauthsession,
+    cenrest,
+    htmlparser,
+    htmlresponse,
+)

@@ -16,11 +16,9 @@ from __future__ import print_function
 
 import logging
 import sys
-import trace
-import traceback
 
 import requests
-from colorama import Back, Fore, Style
+from colorama import Fore, Style
 
 
 def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
@@ -33,7 +31,6 @@ def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
         headers["cache-control"] = "no-cache"
 
     logging.info("Calling " + endpoint + " with headers : " + str(headers))
-    #    logging.info("And body : " + str(body))
     if debug:
         logging.info("Request : " + str(body))
 
@@ -41,16 +38,12 @@ def call_rest_post(endpoint, method, body, headers, certpath, proxy, debug):
         response = requests.post(
             endpoint, headers=headers, verify=certpath, proxies=proxy, data=body
         )
-    except Exception as e:
+    except Exception:
         logging.exception("Error in calling " + endpoint + " - ")
         print(Fore.RED + "Error in calling " + endpoint + " - Please refer logs. ")
         print(Style.RESET_ALL)
         sys.exit(0)
 
-    #    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
-
-    #    Temporary Change
-    #    response = requests.post(endpoint, headers=headers, verify=False, proxies=proxy, data=body)
     logging.info("Received Response : " + response.text)
     return response
 

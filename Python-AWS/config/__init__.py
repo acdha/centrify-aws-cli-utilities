@@ -14,4 +14,4 @@
 
 from __future__ import print_function
 
-from config import apps, environment, proxy
+from config import apps, environment, proxy  # noqa: F401

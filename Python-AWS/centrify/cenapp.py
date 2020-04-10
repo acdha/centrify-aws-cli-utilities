@@ -18,27 +18,14 @@ import base64
 import json
 import logging
 import sys
-import urllib
 import xml.etree.ElementTree as ET
 from urllib import parse as urlparse
 
-from _operator import contains
 from centrify import cenauth, cenrest
-from centrify.authresponse import AuthResponse
 from centrify.awsinputs import AwsInputs
 from centrify.htmlresponse import HtmlResponse
-from centrify.util import printline
 from centrify.util import printline, safe_input
 from colorama import Fore, Style
-
-
-""" Not used
-def get_up_data(session, certpath, proxy):
-    method = "/uprest/getupdata?username=" + "centrify@aetnd.com" + "force=true"
-    body = {}
-    headers = {}
-    response = cenrest.call_rest_post(session.endpoint, method, body, headers, certpath, proxy)
-"""
 
 
 def handle_app_click(session, appkey, version, environment, proxy):
@@ -97,9 +84,6 @@ def call_app(session, appkey, version, environment, proxy):
             "Did not receive SAML response. Please check if you have chosen Saml App"
         )
     return encoded_saml
-
-
-#    return choose_role(encoded_saml, appkey)
 
 
 def choose_role(encoded_saml, appkey):

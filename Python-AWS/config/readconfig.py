@@ -14,12 +14,10 @@
 
 from __future__ import print_function
 
-import base64
 import configparser
 import logging
-from getpass import getpass
 
-from config import apps, environment, proxy
+from config import proxy
 
 
 def set_logging():
@@ -42,33 +40,11 @@ def read_proxy():
     return proxy_object
 
 
-""" This method is not used
-def read_environments():
-    file_reader = configparser.ConfigParser()
-    config_file = 'environment.properties'
-    file_reader.read(config_file)
-    sections = file_reader.sections()
-    environments = []
-    for section in sections:
-        endpoint = file_reader[section]['endpoint']
-        certpath = file_reader[section]['certpath']
-        debug = file_reader[section]['debug']
-        environment_object = environment.Environment(str(section), endpoint, certpath, debug)
-        environments.append(environment_object)
-    return environments
-"""
-
-
 def log_config(proxy):
     proxy.log()
 
 
-#    for environment in environments:
-#        environment.log()
-
-
 def read_config():
     proxy = read_proxy()
-    #   environments = read_environments() No more needed
     log_config(proxy)
     return proxy

@@ -16,24 +16,18 @@ from __future__ import print_function
 
 import json
 import logging
-import platform
 import sys
 import time
-import urllib
 from getpass import getpass
-from queue import Queue
-from threading import Thread
 from urllib import parse as urlparse
 
-from centrify import authresponse
 from centrify.adv_authrequest import AdvAuthRequest
 from centrify.authrequest import AuthRequest
 from centrify.authresponse import AuthResponse
 from centrify.cenauthsession import AuthSession
 from centrify.cenrest import call_rest_post
-from colorama import Back, Fore, Style
-from kbread import kbinput
 from centrify.util import safe_input
+from colorama import Fore, Style
 
 result = []
 done = False
@@ -92,7 +86,7 @@ def advance_authentication(
         if total_mechanism > 1:
             again = True
             while again:
-                for key, value in challenge.items():
+                for value in challenge.values():
                     count = 1
                     for mechanism in value:
                         print(str(count) + " : " + mechanism["PromptSelectMech"])
@@ -112,56 +106,6 @@ def advance_authentication(
             mechanism, tenant_response, username, endpoint, method, proxy, environment
         )
     return session
-
-
-"""
-Not used, as we want to keep platform code same
-def user_input(mechanism, request, endpoint, method, json_req, headers, certpath, proxy, tenant_id, session_id, mechanism_id, queue):
-    logging.info("Mechanism is : " + mechanism['PromptSelectMech'])
-    flag = kbinput.readInput(mechanism['PromptSelectMech'], queue)
-    if not flag:
-        return
-    global done
-    done = True
-    passwd = queue.get()
-    request = AdvAuthRequest(tenant_id, session_id, mechanism_id, passwd)
-    json_req = request.get_adv_auth_json_passwd()
-    logging.info(json_req)
-    authresp = call_rest_post(endpoint, method, json_req, headers, certpath, proxy)
-    authresponse = AuthResponse(authresp, endpoint)
-    success_result = authresponse.get_success_result()
-    summary = authresponse.get_summary()
-    logging.info("Success : " + str(success_result) + " Summary : " + summary)
-    global result
-    result.append(authresp)
-    result.append(success_result)
-    result.append(summary)
-
-def poll(request, endpoint, method, json_req, headers, certpath, proxy):
-    json_req = request.get_adv_auth_json_poll()
-    while (True):
-        authresp = call_rest_post(endpoint, method, json_req, headers, certpath, proxy)
-        resp = AuthResponse(authresp, endpoint)
-        success_result = resp.get_success_result()
-        summary = resp.get_summary()
-        logging.info("Success : " + str(success_result) + " Summary : " + summary)
-        if (success_result == True and summary != "OobPending"):
-            break
-        if (success_result != True):
-            break
-        global done
-        if (done):
-            logging.info("Polling is marked as done...Probably user entered the password..")
-            return
-        time.sleep(2)
-    print()
-    kbinput.shouldExit = True
-    logging.info("[Poll]Is it Successful : " + str(success_result))
-    global result
-    result.append(authresp)
-    result.append(success_result)
-    result.append(summary)
-"""
 
 
 def get_user_choice():
@@ -303,7 +247,6 @@ def handle_text_oob(
         endpoint, method, json_req, headers, certpath, proxy, environment.get_debug()
     )
     logging.info("The response is StartOob req" + authresp.text)
-    #    if (platform.system() != 'Windows'):
     handle_unix(
         mechanism,
         tenant_response,
@@ -317,13 +260,6 @@ def handle_text_oob(
     )
 
 
-############
-#    Removing Platform based code as we want to keep the same functionality across all the platforms
-#    else:
-#        handle_windows(mechanism, tenant_response, username, endpoint, method, certpath, proxy, request, json_req)
-############
-
-
 def advance_auth_for_mech(
     mechanism, tenant_response, username, endpoint, method, proxy, environment
 ):
@@ -334,7 +270,6 @@ def advance_auth_for_mech(
     logging.info("The AnswerType is : " + mechanism["AnswerType"])
     if mechanism["AnswerType"] == "Text" or mechanism["AnswerType"] == "StartTextOob":
         if mechanism["AnswerType"] == "Text":
-            #            authresp = handle_text(mechanism, tenant_response, username, endpoint, method, certpath, proxy)
             handle_text(
                 mechanism,
                 tenant_response,
