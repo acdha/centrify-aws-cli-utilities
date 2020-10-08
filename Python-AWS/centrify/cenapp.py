@@ -21,11 +21,12 @@ import sys
 import xml.etree.ElementTree as ET
 from urllib import parse as urlparse
 
+from colorama import Fore, Style
+
 from centrify import cenauth, cenrest
 from centrify.awsinputs import AwsInputs
 from centrify.htmlresponse import HtmlResponse
 from centrify.util import printline, safe_input
-from colorama import Fore, Style
 
 
 def handle_app_click(session, appkey, version, environment, proxy):

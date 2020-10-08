@@ -34,6 +34,7 @@ import sys
 from getpass import getuser
 
 import coloredlogs
+
 from aws import assumerolesaml
 from aws.util import load_aws_credentials
 from centrify import cenapp, cenauth, uprest
@@ -74,7 +75,8 @@ def select_app(awsapps):
 
 
 class ArgparseSensibleFormatter(
-    argparse.RawDescriptionHelpFormatter, argparse.ArgumentDefaultsHelpFormatter,
+    argparse.RawDescriptionHelpFormatter,
+    argparse.ArgumentDefaultsHelpFormatter,
 ):
     pass
 
