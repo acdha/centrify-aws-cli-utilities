@@ -14,8 +14,10 @@
 
 from __future__ import print_function
 
+import base64
 import logging
 import re
+from xml.etree import ElementTree
 
 import boto3
 from botocore.exceptions import ClientError
@@ -71,9 +73,24 @@ def assume_role_with_saml(
 ):
     stsclient = boto3.client("sts")
 
+    # If the SAML response has a specified duration we'll use that value instead
+    # of the default value of one hour
+    duration_seconds = 3600
+    saml_et = ElementTree.fromstring(base64.b64decode(saml))
+    for elem in saml_et.findall(
+        './/saml2a:Attribute[@Name="https://aws.amazon.com/SAML/Attributes/SessionDuration"]/saml2a:AttributeValue',  # noqa: E501
+        namespaces={
+            "saml2a": "urn:oasis:names:tc:SAML:2.0:assertion",
+        },
+    ):
+        duration_seconds = int(elem.text)
+
     try:
         cred = stsclient.assume_role_with_saml(
-            RoleArn=role, PrincipalArn=principle, SAMLAssertion=saml
+            RoleArn=role,
+            PrincipalArn=principle,
+            SAMLAssertion=saml,
+            DurationSeconds=duration_seconds,
         )
     except ClientError as e:
         logging.error("Access denied: %s", e, exc_info=True)
