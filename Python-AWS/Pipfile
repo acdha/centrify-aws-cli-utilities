@@ -21,6 +21,7 @@ requests = "*"
 boto3 = "*"
 colorama = "*"
 coloredlogs = "*"
+defusedxml = "*"
 
 [requires]
 python_version = "3.8"

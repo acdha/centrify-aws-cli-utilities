@@ -17,10 +17,10 @@ from __future__ import print_function
 import base64
 import logging
 import re
-from xml.etree import ElementTree
 
 import boto3
 from botocore.exceptions import ClientError
+from defusedxml import ElementTree
 
 from .util import load_aws_credentials
 
